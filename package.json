@@ -1,0 +1,36 @@
+{
+  "name": "bragi",
+  "version": "1.0.0",
+  "description": "bragi",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "format": "cd client && yarn format && cd ..",
+    "lint": "cd client && yarn lint && cd ..",
+    "tsc": "cd client && yarn tsc && cd ..",
+    "compile": "cd client && yarn compile && cd ..",
+    "client-dev": "cd client && yarn start",
+    "dev": "concurrently --kill-others-on-fail \"yarn client-dev\"",
+    "test": "echo \"No test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn compile",
+      "pre-push": ""
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bragi-labs/bragi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bragi-labs/bragi/issues"
+  },
+  "homepage": "https://github.com/bragi-labs/bragi#readme",
+  "devDependencies": {
+    "concurrently": "~6.2.0",
+    "husky": "^6.0.0",
+    "web-vitals": "^1.1.2"
+  }
+}

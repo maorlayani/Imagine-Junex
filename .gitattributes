@@ -1,0 +1,13 @@
+*.css text
+*.html text
+*.js text
+*.json text
+*.lock text
+*.log text
+*.md text
+*.svg text
+*.ts text
+*.tsx text
+*.txt text
+*.xml text
+LICENSE text

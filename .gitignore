@@ -1,0 +1,17 @@
+# npm and yarn
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# intellij ide
+*.iml
+.idea/
+
+# vscode ide
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/

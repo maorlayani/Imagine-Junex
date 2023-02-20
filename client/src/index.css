@@ -1,0 +1,169 @@
+/* Play font */
+@font-face {
+	font-family: 'Play';
+	font-style: normal;
+	font-weight: 400;
+	src: local(''),
+		url('./fonts/play-v12-latin-ext_latin-regular.woff2') format('woff2'),
+		url('./fonts/play-v12-latin-ext_latin-regular.woff') format('woff');
+}
+
+@font-face {
+	font-family: 'Play';
+	font-style: normal;
+	font-weight: 700;
+	src: local('Play'),
+		url('./fonts/play-v12-latin-ext_latin-700.woff2') format('woff2'),
+		url('./fonts/play-v12-latin-ext_latin-700.woff') format('woff');
+}
+
+
+/* Share Tech Mono font */
+@font-face {
+	font-family: 'Share Tech Mono';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Share Tech Mono'),
+		url('./fonts/share-tech-mono-v10-latin-regular.woff2') format('woff2'),
+		url('./fonts/share-tech-mono-v10-latin-regular.woff') format('woff');
+}
+
+/* Aguafina Script font */
+@font-face {
+	font-family: 'Aguafina Script';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Aguafina Script'),
+		url('./fonts/aguafina-script-v9-latin-ext_latin-regular.woff2') format('woff2'),
+		url('./fonts/aguafina-script-v9-latin-ext_latin-regular.woff') format('woff');
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+	font-size: 16px;
+}
+
+body {
+	height: 100%;
+	margin: 0;
+	font-family: 'Play', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+		monospace;
+}
+
+#root {
+	height: 100%;
+	background-color: #222;
+	color: #fff;
+}
+
+@keyframes fade-in-animation {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes flash-animation {
+	0% {
+		color: #444;
+	}
+
+	100% {
+		color: #ccc;
+	}
+}
+
+.animate-flash {
+	animation: flash-animation 0.5s ease-in-out infinite alternate;
+}
+
+.mono {
+	font-family: "Share Tech Mono", Consolas, monospace !important;
+}
+
+.display-none {
+	display: none !important;
+}
+
+.pointer-events-none {
+	pointer-events: none;
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar textarea::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.no-scrollbar::-webkit-scrollbar-track,
+.no-scrollbar textarea::-webkit-scrollbar-track {
+	background: #fff;
+}
+
+.no-scrollbar::-webkit-scrollbar-thumb,
+.no-scrollbar textarea::-webkit-scrollbar-thumb {
+	background: #aaa;
+}
+
+.led {
+	position: relative;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	transition: all 0.5s ease-in-out;
+	cursor: pointer;
+	background-color: #444;
+}
+
+.led:hover {
+	opacity: 0.8;
+}
+
+.led::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	transition: all 0.5s ease-in-out;
+	background-color: #555;
+}
+
+.led--off {
+	background-color: #c00;
+	box-shadow: 0 0 10px #c00;
+}
+
+.led--off::before {
+	background-color: #f00;
+	box-shadow: 0 0 4px #f00;
+}
+
+.led--on {
+	background-color: #0c0;
+	box-shadow: 0 0 10px #0c0;
+}
+
+.led--on::before {
+	background-color: #0f0;
+	box-shadow: 0 0 4px #0f0;
+}
