@@ -82,13 +82,13 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 		alter: {
 			position: 'absolute',
-			top: -16,
+			top: -22,
 			transformOrigin: 'center',
 			'&.sharp': {
-				transform: 'rotate(-45deg)',
+				transform: 'rotate(-45deg) translateY(3px) scale(1.6)',
 			},
 			'&.flat': {
-				transform: 'rotate(-135deg)',
+				transform: 'rotate(-135deg) translateY(-3px) scale(1.6)',
 			},
 			zIndex: -1,
 		},
