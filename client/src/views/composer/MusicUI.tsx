@@ -26,10 +26,16 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			position: 'relative',
 			display: 'flex',
 			pageBreakInside: 'avoid',
+			width: 'max-content',
+			height: 'max-content',
 		},
 		measure: {
+			borderBlock: '2px solid #000',
 			position: 'relative',
-			border: '1px solid #999',
+			borderInlineStart: '2px solid #000',
+			'&:last-child': {
+				borderInlineEnd: '2px solid #000',
+			},
 		},
 		measureNumberAnchor: {
 			position: 'absolute',
