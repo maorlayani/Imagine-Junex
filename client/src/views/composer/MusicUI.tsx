@@ -323,8 +323,8 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																	className={classes.longNoteTail}
 																	style={{
 																		backgroundColor: `${FigurenotesHelper.getNoteColor(MusicalHelper.parseNote(n.fullName).step)}`,
-																		top: `${scoreSettings.quarterSize - 12}px`,
-																		height: `10px`,
+																		top: `${scoreSettings.quarterSize - 19}px`,
+																		height: `17px`,
 																		left:
 																			MusicalHelper.parseNote(n.fullName).octave <= 3
 																				? `${scoreSettings.quarterSize - 2}px`
@@ -332,12 +332,11 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		width:
 																			MusicalHelper.parseNote(n.fullName).octave <= 3
 																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1}px`
-																				: `${
-																						scoreSettings.quarterSize / 2 -
-																						1 +
-																						((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
-																						1
-																				  }px`,
+																				: `${scoreSettings.quarterSize / 2 -
+																				1 +
+																				((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
+																				1
+																				}px`,
 																	}}
 																/>
 															)}
@@ -358,11 +357,10 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																	className={classes.noteName}
 																	style={{
 																		top: `${scoreSettings.quarterSize / 2 - 9}px`,
-																		left: `${
-																			MusicalHelper.parseNote(n.fullName).alter
+																		left: `${MusicalHelper.parseNote(n.fullName).alter
 																				? scoreSettings.quarterSize / 2 - 9
 																				: scoreSettings.quarterSize / 2 - 5.5
-																		}px`,
+																			}px`,
 																		fontSize: `${getPartFontSize(p.partInfoId) || 12}px`,
 																	}}
 																>
