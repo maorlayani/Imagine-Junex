@@ -20,14 +20,21 @@ export class FigurenotesHelper {
 	static getNoteColor(noteName: string): string {
 		return (
 			{
-				C: '#ef2f2c',
-				D: '#8b5e37',
-				E: '#bbbbb9',
-				F: '#1e8ece',
-				G: '#0c0d11',
-				//A: '#f0e52b',
-				A: '#e7db10',
-				B: '#38ac49',
+				// C: '#ef2f2c', color in Uri's version
+				C: '#FF0000',
+				// D: '#8b5e37', color in Uri's version
+				D: '#A97544',
+				// E: '#bbbbb9', color in Uri's version
+				E: '#D1CCC0',
+				// F: '#1e8ece', color in Uri's version
+				F: '#1BA7D4',
+				// G: '#0c0d11', color in Uri's version
+				G: '#000000',
+				// A: '#f0e52b', color in Uri's version
+				// A: '#e7db10',
+				A: '#F9E738',
+				// B: '#38ac49', color in Uri's version
+				B: '#2AB442',
 			}[noteName[0]] || ''
 		);
 	}
