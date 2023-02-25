@@ -37,6 +37,15 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 				borderInlineEnd: '2px solid #000',
 			},
 		},
+		measureInnerBorders: {
+			position: 'absolute',
+			zIndex: 10,
+			borderInlineEnd: '2px dashed #000',
+			pointerEvents: 'none',
+			'&:last-of-type': {
+				borderInlineEnd: 'none',
+			},
+		},
 		measureNumberAnchor: {
 			position: 'absolute',
 			top: 0,
@@ -60,7 +69,8 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		note: {
 			position: 'relative',
 			fontSize: 10,
-			border: '1px solid #eee',
+			border: '1px solid #fff',
+			borderBlock: '1px solid #eee',
 			'&.selected': {
 				backgroundColor: '#ddf',
 				border: '1px solid #3f51b5',
@@ -194,7 +204,6 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 		[music],
 	);
-
 	const getRows = useCallback(
 		function getRows() {
 			if (music.measures.length === 0) {
@@ -216,7 +225,9 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 		[music, sizeVars.numberOfMeasuresPerRow],
 	);
-
+	const getNotesPerMeasure = useCallback(function timeSignatureToInt(timeSignature: string) {
+		return [...Array(+timeSignature.charAt(0))];
+	}, []);
 	const getPartFontSize = useCallback(
 		function getPartFontSize(partInfoId: string) {
 			const partInfo = Music.findPartInfo(music, partInfoId);
@@ -285,6 +296,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			{getRows().map((row, rIndex) => (
 				<Box key={rIndex} className={classes.row} style={{ marginLeft: `${sizeVars.leftGutter}px` }}>
 					{row.map((mIndex) => (
+						// Add in the number of the measure if it is the first measure in a row
 						<Box key={`${rIndex}-${mIndex}`} className={classes.measure} style={{ marginTop: `${rIndex === 0 ? 0 : scoreSettings.rowGap}px` }}>
 							{scoreSettings.measureNumbers && music.measures[mIndex].number % sizeVars.numberOfMeasuresPerRow === 1 && (
 								<Box className={classes.measureNumberAnchor}>
@@ -295,91 +307,123 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 									</Box>
 								</Box>
 							)}
+							{/* now according to the indexes we got from getRows(), make the parts (the melodies or text that run in parallel with the rows along the play) */}
 							{music.measures[mIndex].parts.map((p, pIndex) => (
 								<Box key={`${rIndex}-${mIndex}-${p.id}`} style={{ width: `${sizeVars.partWidth}px` }}>
 									{Music.isPartVisible(music, p.partInfoId) && p.partType === PartType.FN_LVL_1 && (
 										<Box className={`${classes.melodyPartRoot} ${pIndex === 0 ? '' : classes.partSpaceAbove}`}>
-											{p.notes.map((n) => (
+											{/* this are the inner borders between notes within the measure */}
+											{/* {getNotesPerMeasure(music.measures[mIndex].timeSignature).map((n, idx) => (
 												<Box
-													key={n.id}
-													data-note-id={n.id}
-													onClick={handleClickNote}
-													className={`${classes.note} ${selection.find((si) => si.noteId === n.id) ? 'selected' : ''}`}
-													style={{ flex: `${n.durationDivs} 0 0`, height: `${scoreSettings.quarterSize}px` }}
-												>
-													{n.fullName && (
-														<Box
-															className={classes.fnSymbolContainer}
-															style={{
-																transform: `scaleX(${n.durationDivs >= 24 ? 1 : n.durationDivs / 24})`,
-															}}
-														>
+													key={`${music.measures[mIndex].id}-${idx}-border-overlay`}
+													className={classes.measureInnerBorders}
+													style={{
+														flex: `${n.durationDivs} 0 0`,
+														height: `${scoreSettings.quarterSize}px`,
+														left: `${scoreSettings.quarterSize * (idx + 1)}px`,
+													}}
+												/>
+											))} */}
+											{p.notes.map((n, idx) => (
+												<>
+													{idx === 0 &&
+														getNotesPerMeasure(music.measures[mIndex].timeSignature).map((b, idx) => (
 															<Box
-																className={classes.fnSymbol}
+																key={`${music.measures[mIndex].id}-${idx}-border-overlay`}
+																className={classes.measureInnerBorders}
 																style={{
-																	...FigurenotesHelper.getSymbolStyle(
-																		`${MusicalHelper.parseNote(n.fullName).step}${MusicalHelper.parseNote(n.fullName).octave}`,
-																		scoreSettings.quarterSize - 2,
-																		'px',
-																	),
+																	flex: `${n.durationDivs} 0 0`,
+																	height: `${scoreSettings.quarterSize}px`,
+																	left: `${scoreSettings.quarterSize * (idx + 1)}px`,
 																}}
 															/>
-															{n.durationDivs > 24 && (
+														))}
+													{/* this is a note */}
+													<Box
+														key={n.id}
+														data-note-id={n.id}
+														onClick={handleClickNote}
+														className={`${classes.note} ${selection.find((si) => si.noteId === n.id) ? 'selected' : ''}`}
+														style={{ flex: `${n.durationDivs} 0 0`, height: `${scoreSettings.quarterSize}px` }}
+													>
+														{/* the container for the note */}
+														{n.fullName && (
+															<Box
+																className={classes.fnSymbolContainer}
+																style={{
+																	transform: `scaleX(${n.durationDivs >= 24 ? 1 : n.durationDivs / 24})`,
+																}}
+															>
+																{/* the note itself */}
 																<Box
-																	className={classes.longNoteTail}
+																	className={classes.fnSymbol}
 																	style={{
-																		backgroundColor: `${FigurenotesHelper.getNoteColor(MusicalHelper.parseNote(n.fullName).step)}`,
-																		top: `${scoreSettings.quarterSize - 19}px`,
-																		height: `17px`,
-																		left:
-																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${scoreSettings.quarterSize - 2}px`
-																				: `${scoreSettings.quarterSize / 2 - 1}px`,
-																		width:
-																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1}px`
-																				: `${
-																						scoreSettings.quarterSize / 2 -
-																						1 +
-																						((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
-																						1
-																				  }px`,
+																		...FigurenotesHelper.getSymbolStyle(
+																			`${MusicalHelper.parseNote(n.fullName).step}${MusicalHelper.parseNote(n.fullName).octave}`,
+																			scoreSettings.quarterSize - 2,
+																			'px',
+																		),
 																	}}
 																/>
-															)}
-															{n.fullName.length >= 2 && n.fullName[1] === '#' && (
-																<ArrowRightAltIcon
-																	className={`${classes.alter} sharp`}
-																	style={{ left: `${scoreSettings.quarterSize / 2 - 8}px` }}
-																/>
-															)}
-															{n.fullName.length >= 2 && n.fullName[1] === 'b' && (
-																<ArrowRightAltIcon
-																	className={`${classes.alter} flat`}
-																	style={{ left: `${scoreSettings.quarterSize / 2 - 18}px` }}
-																/>
-															)}
-															{getPartFontSize(p.partInfoId) > 0 && (
-																<Box
-																	className={classes.noteName}
-																	style={{
-																		top: `${scoreSettings.quarterSize / 2 - 9}px`,
-																		left: `${
-																			MusicalHelper.parseNote(n.fullName).alter
-																				? scoreSettings.quarterSize / 2 - 9
-																				: scoreSettings.quarterSize / 2 - 5.5
-																		}px`,
-																		fontSize: `${getPartFontSize(p.partInfoId) || 12}px`,
-																	}}
-																>
-																	{MusicalHelper.parseNote(n.fullName).step}
-																	{MusicalHelper.parseNote(n.fullName).alter}
-																</Box>
-															)}
-														</Box>
-													)}
-													{!n.fullName && <Box>{``}</Box>}
-												</Box>
+																{/* the "tail" in case the note is longer than a standard unit */}
+																{n.durationDivs > 24 && (
+																	<Box
+																		className={classes.longNoteTail}
+																		style={{
+																			backgroundColor: `${FigurenotesHelper.getNoteColor(MusicalHelper.parseNote(n.fullName).step)}`,
+																			top: `${scoreSettings.quarterSize - 19}px`,
+																			height: `17px`,
+																			left:
+																				MusicalHelper.parseNote(n.fullName).octave <= 3
+																					? `${scoreSettings.quarterSize - 2}px`
+																					: `${scoreSettings.quarterSize / 2 - 1}px`,
+																			width:
+																				MusicalHelper.parseNote(n.fullName).octave <= 3
+																					? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1}px`
+																					: `${
+																							scoreSettings.quarterSize / 2 -
+																							1 +
+																							((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
+																							1
+																					  }px`,
+																		}}
+																	/>
+																)}
+																{/* the arrow for flat / sharp */}
+																{n.fullName.length >= 2 && n.fullName[1] === '#' && (
+																	<ArrowRightAltIcon
+																		className={`${classes.alter} sharp`}
+																		style={{ left: `${scoreSettings.quarterSize / 2 - 8}px` }}
+																	/>
+																)}
+																{n.fullName.length >= 2 && n.fullName[1] === 'b' && (
+																	<ArrowRightAltIcon
+																		className={`${classes.alter} flat`}
+																		style={{ left: `${scoreSettings.quarterSize / 2 - 18}px` }}
+																	/>
+																)}
+																{getPartFontSize(p.partInfoId) > 0 && (
+																	<Box
+																		className={classes.noteName}
+																		style={{
+																			top: `${scoreSettings.quarterSize / 2 - 9}px`,
+																			left: `${
+																				MusicalHelper.parseNote(n.fullName).alter
+																					? scoreSettings.quarterSize / 2 - 9
+																					: scoreSettings.quarterSize / 2 - 5.5
+																			}px`,
+																			fontSize: `${getPartFontSize(p.partInfoId) || 12}px`,
+																		}}
+																	>
+																		{MusicalHelper.parseNote(n.fullName).step}
+																		{MusicalHelper.parseNote(n.fullName).alter}
+																	</Box>
+																)}
+															</Box>
+														)}
+														{!n.fullName && <Box>{``}</Box>}
+													</Box>
+												</>
 											))}
 										</Box>
 
