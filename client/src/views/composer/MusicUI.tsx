@@ -190,10 +190,12 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		const spaceForMeasurementNumbers = 20;
 		const numberOfMeasuresPerRow = Math.trunc((scoreSettings.musicWidth - spaceForMeasurementNumbers) / measureWidth);
 		const leftGutter = (scoreSettings.musicWidth - measureWidth * numberOfMeasuresPerRow) / 2;
+		const isQuarters = music.measures[0].timeSignature[2] === '4' ? true : false;
 		return {
 			numberOfMeasuresPerRow,
 			partWidth,
 			leftGutter,
+			isQuarters,
 		};
 	}, [music, scoreSettings.musicWidth, scoreSettings.quarterSize]);
 
@@ -405,7 +407,9 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 													className={classes.measureInnerBorders}
 													style={{
 														height: `${scoreSettings.quarterSize}px`,
-														left: `${scoreSettings.quarterSize * (idx + 1) - 1}px`,
+														left: `${
+															sizeVars.isQuarters ? scoreSettings.quarterSize * (idx + 1) - 1 : (scoreSettings.quarterSize * (idx + 1) - 1) / 2
+														}px`,
 													}}
 												/>
 											))}
