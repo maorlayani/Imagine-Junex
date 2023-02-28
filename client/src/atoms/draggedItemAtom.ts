@@ -5,6 +5,7 @@ export enum DraggedItemType {
 	NOTE_PANEL = 'NOTE_PANEL',
 	MEASURE_PANEL = 'MEASURE_PANEL',
 	PARTS_PANEL = 'PARTS_PANEL',
+	BW_PANEL = 'BW_PANEL', //BoomWhacker panel
 	NA = 'NA',
 }
 

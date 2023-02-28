@@ -17,7 +17,27 @@ export class FigurenotesHelper {
 			return FnOctaveShape.NA;
 		}
 	}
-	static getNoteColor(noteName: string): string {
+	// אדום - דו (C) - FE0000
+	// מג'נטה - סי (B) - FF00FE
+	// סגול - לה (A) - 9A00FA
+	// ירוק כהה - סול (G) - 196F3E
+	// ירוק בהיר - פה (F) - 01FF00
+	// צהוב - מי (E) - FFFF00
+	// כתום - רה (D) - FC9A01
+	static getNoteColor(noteName: string, isBoomWhacker = false): string {
+		if (isBoomWhacker) {
+			return (
+				{
+					C: '#FE0000',
+					B: '#FF00FE',
+					A: '#9A00FA',
+					G: '#196F3E',
+					F: '#01FF00',
+					E: '#FFFF00',
+					D: '#FC9A01',
+				}[noteName[0]] || ''
+			);
+		}
 		return (
 			{
 				// C: '#ef2f2c', color in Uri's version

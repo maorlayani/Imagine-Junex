@@ -15,6 +15,7 @@ import { PartsPanel } from './PartsPanel';
 import { MusicalHelper } from '../../services/musicalHelper';
 import { PlayerPanel } from './PlayerPanel';
 import { diskSaveTimeAtom } from '../../atoms/diskSaveTimeAtom';
+import { BoomWhacker } from '../../components/BoomWhacker';
 
 export const ComposerPage = () => {
 	const useStyles = makeStyles(() => ({
@@ -72,6 +73,14 @@ export const ComposerPage = () => {
 			position: 'absolute',
 			left: 800,
 			top: 416,
+			'@media print': {
+				display: 'none',
+			},
+		},
+		boomWhackerPanelAnchor: {
+			position: 'absolute',
+			left: 800,
+			top: 515,
 			'@media print': {
 				display: 'none',
 			},
@@ -147,6 +156,7 @@ export const ComposerPage = () => {
 
 	const handlePianoNote = useCallback(
 		function handlePianoNote(noteFullName: string) {
+			console.log('piano pressed:', noteFullName);
 			if (!score || selection.length !== 1) {
 				return;
 			}
@@ -163,6 +173,13 @@ export const ComposerPage = () => {
 				}
 			}
 			handleScoreUpdated();
+		},
+		[score, selection, handleScoreUpdated],
+	);
+
+	const handleBoomWhackerNote = useCallback(
+		function handleBoomWhackerNote(noteFullName: string) {
+			console.log('boomwhacker pressed:', noteFullName);
 		},
 		[score, selection, handleScoreUpdated],
 	);
@@ -191,6 +208,9 @@ export const ComposerPage = () => {
 					</Box>
 					<Box className={classes.partsPanelAnchor}>
 						<PartsPanel music={score.music} onUpdateScore={handleScoreUpdated} />
+					</Box>
+					<Box className={classes.boomWhackerPanelAnchor}>
+						<BoomWhacker onBoomWhackerNote={handleBoomWhackerNote} />
 					</Box>
 				</>
 			)}
