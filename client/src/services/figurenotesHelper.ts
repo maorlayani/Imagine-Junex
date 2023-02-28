@@ -17,13 +17,6 @@ export class FigurenotesHelper {
 			return FnOctaveShape.NA;
 		}
 	}
-	// אדום - דו (C) - FE0000
-	// מג'נטה - סי (B) - FF00FE
-	// סגול - לה (A) - 9A00FA
-	// ירוק כהה - סול (G) - 196F3E
-	// ירוק בהיר - פה (F) - 01FF00
-	// צהוב - מי (E) - FFFF00
-	// כתום - רה (D) - FC9A01
 	static getNoteColor(noteName: string, isBoomWhacker = false): string {
 		if (isBoomWhacker) {
 			return (
@@ -64,11 +57,11 @@ export class FigurenotesHelper {
 	static getBlackIndices(): number[] {
 		return [1, 3, 6, 8, 10];
 	}
-	static getSymbolStyle(noteFullName: string, size: number, units: string) {
+	static getSymbolStyle(noteFullName: string, size: number, units: string, isBoomWhacker: boolean | undefined) {
 		let style: any;
 		const noteDetails = MusicalHelper.parseNote(noteFullName);
 		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave);
-		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step);
+		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, isBoomWhacker);
 		switch (octaveShape) {
 			case FnOctaveShape.X: {
 				style = {

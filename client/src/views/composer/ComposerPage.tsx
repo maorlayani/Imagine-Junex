@@ -187,6 +187,7 @@ export const ComposerPage = () => {
 			}
 			note.isRest = false;
 			note.fullName = noteFullName;
+			note.isBoomwhacker = true;
 			handleScoreUpdated();
 		},
 		[score, selection, handleScoreUpdated],

@@ -338,6 +338,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		`${MusicalHelper.parseNote(n.fullName).step}${MusicalHelper.parseNote(n.fullName).octave}`,
 																		scoreSettings.quarterSize - 2,
 																		'px',
+																		n.isBoomwhacker,
 																	),
 																}}
 															/>
@@ -346,7 +347,10 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																<Box
 																	className={classes.longNoteTail}
 																	style={{
-																		backgroundColor: `${FigurenotesHelper.getNoteColor(MusicalHelper.parseNote(n.fullName).step)}`,
+																		backgroundColor: `${FigurenotesHelper.getNoteColor(
+																			MusicalHelper.parseNote(n.fullName).step,
+																			n.isBoomwhacker,
+																		)}`,
 																		top: `${scoreSettings.quarterSize - 19}px`,
 																		height: `17px`,
 																		left:
