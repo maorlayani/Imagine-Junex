@@ -156,7 +156,6 @@ export const ComposerPage = () => {
 
 	const handlePianoNote = useCallback(
 		function handlePianoNote(noteFullName: string) {
-			console.log('piano pressed:', noteFullName);
 			if (!score || selection.length !== 1) {
 				return;
 			}
@@ -179,7 +178,16 @@ export const ComposerPage = () => {
 
 	const handleBoomWhackerNote = useCallback(
 		function handleBoomWhackerNote(noteFullName: string) {
-			console.log('boomwhacker pressed:', noteFullName);
+			if (!score || selection.length !== 1) {
+				return;
+			}
+			const note = Score.findNote(score, selection[0].noteId);
+			if (!note) {
+				return;
+			}
+			note.isRest = false;
+			note.fullName = noteFullName;
+			handleScoreUpdated();
 		},
 		[score, selection, handleScoreUpdated],
 	);
