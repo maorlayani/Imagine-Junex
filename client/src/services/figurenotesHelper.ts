@@ -115,6 +115,7 @@ export class FigurenotesHelper {
 					backgroundColor: `${noteColor}`,
 					transform: `rotate(45deg) scale(0.71)`,
 					transformOrigin: `${size / 2}${units} ${size / 2}${units}`,
+					border: '1px solid black',
 					//borderRadius: `10%`,
 				};
 				break;
