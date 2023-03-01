@@ -36,6 +36,7 @@ export interface NoteModel {
 	durationDivs: number; //e.g. 24
 	isTiedToNext: boolean; //e.g. false
 	isTiedToPrev: boolean; //e.g. false
+	isBoomwhacker?: boolean;
 }
 export interface ChordModel {
 	kind: EntityKind; //"CHORD"

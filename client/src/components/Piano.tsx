@@ -332,7 +332,7 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 									<Box
 										className={`${classes.figureNoteSymbol} ${oct && fnSymbolsOn ? '' : 'display-none'}`}
 										style={{
-											...FigurenotesHelper.getSymbolStyle(`${wk.noteName}${octIndex + MusicalHelper.minOctave}`, smallPiano ? 16 : 32, 'px'),
+											...FigurenotesHelper.getSymbolStyle(`${wk.noteName}${octIndex + MusicalHelper.minOctave}`, smallPiano ? 16 : 32, 'px', false),
 											left: wk.left + (smallPiano ? 3 : 7),
 										}}
 									/>

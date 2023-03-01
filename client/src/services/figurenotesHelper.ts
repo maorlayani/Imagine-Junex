@@ -7,27 +7,49 @@ export enum FnOctaveShape {
 	'TRIANGLE' = 'TRIANGLE',
 	'RHOMBUS' = 'RHOMBUS',
 	'NA' = 'NA',
+	'BW_SP' = 'BW_SP', //a special case for the octave note on the Boomwhacker
 }
 
 export class FigurenotesHelper {
-	static getOctaveShape(octaveNumber: number): FnOctaveShape {
+	static getOctaveShape(octaveNumber: number, isBoomwhacker: boolean | undefined): FnOctaveShape {
+		if (isBoomwhacker && octaveNumber === 5) return FnOctaveShape.BW_SP;
 		if (octaveNumber >= 0 && octaveNumber <= 6) {
 			return [FnOctaveShape.NA, FnOctaveShape.NA, FnOctaveShape.X, FnOctaveShape.SQUARE, FnOctaveShape.CIRCLE, FnOctaveShape.TRIANGLE, FnOctaveShape.RHOMBUS][octaveNumber];
 		} else {
 			return FnOctaveShape.NA;
 		}
 	}
-	static getNoteColor(noteName: string): string {
+	static getNoteColor(noteName: string, isBoomWhacker = false): string {
+		if (isBoomWhacker) {
+			return (
+				{
+					C: '#FE0000',
+					B: '#FF00FE',
+					A: '#9A00FA',
+					G: '#196F3E',
+					F: '#01FF00',
+					E: '#FFFF00',
+					D: '#FC9A01',
+				}[noteName[0]] || ''
+			);
+		}
 		return (
 			{
-				C: '#ef2f2c',
-				D: '#8b5e37',
-				E: '#bbbbb9',
-				F: '#1e8ece',
-				G: '#0c0d11',
-				//A: '#f0e52b',
-				A: '#e7db10',
-				B: '#38ac49',
+				// C: '#ef2f2c', color in Uri's version
+				C: '#FF0000',
+				// D: '#8b5e37', color in Uri's version
+				D: '#A97544',
+				// E: '#bbbbb9', color in Uri's version
+				E: '#D1CCC0',
+				// F: '#1e8ece', color in Uri's version
+				F: '#1BA7D4',
+				// G: '#0c0d11', color in Uri's version
+				G: '#000000',
+				// A: '#f0e52b', color in Uri's version
+				// A: '#e7db10',
+				A: '#F9E738',
+				// B: '#38ac49', color in Uri's version
+				B: '#2AB442',
 			}[noteName[0]] || ''
 		);
 	}
@@ -37,11 +59,11 @@ export class FigurenotesHelper {
 	static getBlackIndices(): number[] {
 		return [1, 3, 6, 8, 10];
 	}
-	static getSymbolStyle(noteFullName: string, size: number, units: string) {
+	static getSymbolStyle(noteFullName: string, size: number, units: string, isBoomWhacker: boolean | undefined) {
 		let style: any;
 		const noteDetails = MusicalHelper.parseNote(noteFullName);
-		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave);
-		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step);
+		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, isBoomWhacker);
+		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, isBoomWhacker);
 		switch (octaveShape) {
 			case FnOctaveShape.X: {
 				style = {
@@ -67,21 +89,24 @@ export class FigurenotesHelper {
 				style = {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
-					backgroundColor: `${noteColor}`,
-					borderRadius: `50%`,
-					border: '2px solid',
+					background: `radial-gradient(${noteColor} 67%, rgb(0, 0, 0) 70%, rgb(255,255,255) 73%)`,
 					zIndex: '20',
+					// backgroundColor: `${noteColor}`,
+					// borderRadius: `50%`,
 				};
 				break;
 			}
 			case FnOctaveShape.TRIANGLE: {
 				style = {
-					width: `0`,
-					height: `0`,
-					borderLeft: `${size / 2}${units} solid transparent`,
-					borderRight: `${size / 2}${units} solid transparent`,
-					borderBottom: `${size}${units} solid ${noteColor}`,
+					// width: `0`,
+					// height: `0`,
+					// borderLeft: `${size / 2}${units} solid transparent`,
+					// borderRight: `${size / 2}${units} solid transparent`,
+					// borderBottom: `${size}${units} solid ${noteColor}`,
 					//borderRadius: `10%`,
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 30%, black 32%, transparent 34%), linear-gradient(-116.5deg, transparent 30%, black 32%, ${noteColor} 34%)`,
 				};
 				break;
 			}
@@ -95,6 +120,14 @@ export class FigurenotesHelper {
 					border: '2px solid',
 					zIndex: '20',
 					//borderRadius: `10%`,
+				};
+				break;
+			}
+			case FnOctaveShape.BW_SP: {
+				style = {
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					background: `radial-gradient(rgb(255,255,255) 29%, rgb(0,0,0) 33%, ${noteColor} 37%, ${noteColor} 67%, rgb(0, 0, 0) 70%, transparent 73%)`,
 				};
 				break;
 			}
