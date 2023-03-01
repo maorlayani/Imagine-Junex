@@ -7,10 +7,12 @@ export enum FnOctaveShape {
 	'TRIANGLE' = 'TRIANGLE',
 	'RHOMBUS' = 'RHOMBUS',
 	'NA' = 'NA',
+	'BW_SP' = 'BW_SP', //a special case for the octave note on the Boomwhacker
 }
 
 export class FigurenotesHelper {
-	static getOctaveShape(octaveNumber: number): FnOctaveShape {
+	static getOctaveShape(octaveNumber: number, isBoomwhacker: boolean | undefined): FnOctaveShape {
+		if (isBoomwhacker && octaveNumber === 5) return FnOctaveShape.BW_SP;
 		if (octaveNumber >= 0 && octaveNumber <= 6) {
 			return [FnOctaveShape.NA, FnOctaveShape.NA, FnOctaveShape.X, FnOctaveShape.SQUARE, FnOctaveShape.CIRCLE, FnOctaveShape.TRIANGLE, FnOctaveShape.RHOMBUS][octaveNumber];
 		} else {
@@ -60,7 +62,7 @@ export class FigurenotesHelper {
 	static getSymbolStyle(noteFullName: string, size: number, units: string, isBoomWhacker: boolean | undefined) {
 		let style: any;
 		const noteDetails = MusicalHelper.parseNote(noteFullName);
-		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave);
+		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, isBoomWhacker);
 		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, isBoomWhacker);
 		switch (octaveShape) {
 			case FnOctaveShape.X: {
@@ -77,6 +79,7 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					backgroundColor: `${noteColor}`,
+					border: '1px solid black',
 					//borderRadius: `10%`,
 				};
 				break;
@@ -85,19 +88,23 @@ export class FigurenotesHelper {
 				style = {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
-					backgroundColor: `${noteColor}`,
-					borderRadius: `50%`,
+					background: `radial-gradient(${noteColor} 67%, rgb(0, 0, 0) 70%, rgb(255,255,255) 73%)`,
+					// backgroundColor: `${noteColor}`,
+					// borderRadius: `50%`,
 				};
 				break;
 			}
 			case FnOctaveShape.TRIANGLE: {
 				style = {
-					width: `0`,
-					height: `0`,
-					borderLeft: `${size / 2}${units} solid transparent`,
-					borderRight: `${size / 2}${units} solid transparent`,
-					borderBottom: `${size}${units} solid ${noteColor}`,
+					// width: `0`,
+					// height: `0`,
+					// borderLeft: `${size / 2}${units} solid transparent`,
+					// borderRight: `${size / 2}${units} solid transparent`,
+					// borderBottom: `${size}${units} solid ${noteColor}`,
 					//borderRadius: `10%`,
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 30%, black 32%, transparent 34%), linear-gradient(-116.5deg, transparent 30%, black 32%, ${noteColor} 34%)`,
 				};
 				break;
 			}
@@ -109,6 +116,14 @@ export class FigurenotesHelper {
 					transform: `rotate(45deg) scale(0.71)`,
 					transformOrigin: `${size / 2}${units} ${size / 2}${units}`,
 					//borderRadius: `10%`,
+				};
+				break;
+			}
+			case FnOctaveShape.BW_SP: {
+				style = {
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					background: `radial-gradient(rgb(255,255,255) 29%, rgb(0,0,0) 33%, ${noteColor} 37%, ${noteColor} 67%, rgb(0, 0, 0) 70%, transparent 73%)`,
 				};
 				break;
 			}
