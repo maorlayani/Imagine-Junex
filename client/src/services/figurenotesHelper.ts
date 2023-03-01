@@ -57,6 +57,8 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					backgroundColor: `${noteColor}`,
+					border: '2px solid',
+					zIndex: '20',
 					//borderRadius: `10%`,
 				};
 				break;
@@ -67,6 +69,8 @@ export class FigurenotesHelper {
 					height: `${size}${units}`,
 					backgroundColor: `${noteColor}`,
 					borderRadius: `50%`,
+					border: '2px solid',
+					zIndex: '20',
 				};
 				break;
 			}
@@ -88,6 +92,8 @@ export class FigurenotesHelper {
 					backgroundColor: `${noteColor}`,
 					transform: `rotate(45deg) scale(0.71)`,
 					transformOrigin: `${size / 2}${units} ${size / 2}${units}`,
+					border: '2px solid',
+					zIndex: '20',
 					//borderRadius: `10%`,
 				};
 				break;
