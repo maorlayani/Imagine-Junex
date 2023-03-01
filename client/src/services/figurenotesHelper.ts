@@ -92,7 +92,7 @@ export class FigurenotesHelper {
 					background: `radial-gradient(${noteColor} 67%, rgb(0, 0, 0) 70%, rgb(255,255,255) 73%)`,
 					zIndex: '20',
 					// backgroundColor: `${noteColor}`,
-					// borderRadius: `50%`,
+					borderRadius: `50%`,
 				};
 				break;
 			}
@@ -107,6 +107,7 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 30%, black 32%, transparent 34%), linear-gradient(-116.5deg, transparent 30%, black 32%, ${noteColor} 34%)`,
+					zIndex: '20',
 				};
 				break;
 			}
