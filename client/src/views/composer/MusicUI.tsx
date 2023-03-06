@@ -351,18 +351,18 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																			MusicalHelper.parseNote(n.fullName).step,
 																			n.isBoomwhacker,
 																		)}`,
-																		borderTop: '2px solid',
-																		borderRight: '2px solid',
-																		borderBottom: '2px solid',
+																		borderTop: '1.5px solid',
+																		borderRight: '1.5px solid',
+																		borderBottom: '1.5px solid',
 																		top: `${scoreSettings.quarterSize - 19}px`,
 																		height: `17px`,
 																		left:
 																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${scoreSettings.quarterSize - 2 - 7}px`
+																				? `${scoreSettings.quarterSize - 2 - 8}px`
 																				: `${scoreSettings.quarterSize / 2 - 1}px`,
 																		width:
 																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 7}px`
+																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 8}px`
 																				: `${scoreSettings.quarterSize / 2 -
 																				1 +
 																				((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
