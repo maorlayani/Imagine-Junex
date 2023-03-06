@@ -84,12 +84,12 @@ export class Measure implements MeasureModel {
 		return result;
 	}
 
-	static canChangeNoteDuration(m: MeasureModel, partId: string, noteId: string, newDurationDivs: number): boolean {
+	static canChangeNoteDuration(m: MeasureModel, partId: string, noteId: string, newDurationDivs: number, isLastMeasure: boolean): boolean {
 		const p = Measure.findPart(m, partId);
 		if (!p) {
 			return false;
 		}
-		return Part.canChangeNoteDuration(p, noteId, newDurationDivs, m.durationDivs);
+		return Part.canChangeNoteDuration(p, noteId, newDurationDivs, m.durationDivs, isLastMeasure);
 	}
 
 	static toggleSharps(m: MeasureModel) {

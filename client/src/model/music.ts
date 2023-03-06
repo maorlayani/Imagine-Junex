@@ -50,6 +50,9 @@ export class Music implements MusicModel {
 	static findMeasure(u: MusicModel, measureId: string): MeasureModel | null {
 		return u.measures.find((m) => m.id === measureId) || null;
 	}
+	static isLastMeasure(u: MusicModel, measureId: string): boolean {
+		return u.measures[u.measures.length - 1].id === measureId;
+	}
 
 	static findPart(u: MusicModel, partId: string): PartModel | null {
 		let result: PartModel | null = null;

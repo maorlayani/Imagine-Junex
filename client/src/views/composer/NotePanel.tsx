@@ -182,8 +182,9 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 			noteDurationOptions.forEach((o) => {
 				noteDurationsOK[o.durationDivs] = selection.every((item) => {
 					m = item.measureId && Music.findMeasure(score.music, item.measureId);
+					const isLastMeasure = Music.isLastMeasure(score.music, item.measureId);
 					if (!m) return false;
-					return Measure.canChangeNoteDuration(m, item.partId, item.noteId, o.durationDivs);
+					return Measure.canChangeNoteDuration(m, item.partId, item.noteId, o.durationDivs, isLastMeasure);
 				});
 			});
 			setCanChangeDuration(noteDurationsOK);
@@ -299,7 +300,8 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 				if (!p) {
 					return;
 				}
-				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m.timeSignature, m.durationDivs);
+				const isLastMeasure = Music.isLastMeasure(score.music, n.measureId);
+				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m.timeSignature, m.durationDivs, isLastMeasure);
 				onUpdateScore();
 			});
 		},

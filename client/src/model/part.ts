@@ -49,16 +49,23 @@ export class Part implements PartModel {
 		return p.notes.find((n) => n.id === noteId) || null;
 	}
 
-	static canChangeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measureDurationDivs: number): boolean {
+	static canChangeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measureDurationDivs: number, isLastMeasure: boolean): boolean {
 		if (p.partType !== PartType.FN_LVL_1) {
 			return false;
 		}
 		const n = Part.findNote(p, noteId);
-		return !!n && n.durationDivs !== newDurationDivs && n.startDiv + newDurationDivs <= measureDurationDivs;
+		// if note exists: in case it is the last measure, see if it doesnt over pass it
+		if (n) console.log(`requested divs: ${n.startDiv + newDurationDivs}, duration: ${measureDurationDivs}`);
+		if (n && isLastMeasure && n.startDiv + newDurationDivs > measureDurationDivs) return false;
+		// if note exists and it isnt already the same duration defined to it
+		return !!n && n.durationDivs !== newDurationDivs;
+
+		// Uri's original code
+		// return !!n && n.durationDivs !== newDurationDivs && n.startDiv + newDurationDivs <= measureDurationDivs;
 	}
 
-	static changeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measureTimeSignature: string, measureDurationDivs: number) {
-		if (!Part.canChangeNoteDuration(p, noteId, newDurationDivs, measureDurationDivs)) {
+	static changeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measureTimeSignature: string, measureDurationDivs: number, isLastMeasure: boolean) {
+		if (!Part.canChangeNoteDuration(p, noteId, newDurationDivs, measureDurationDivs, isLastMeasure)) {
 			return;
 		}
 		const targetNote = Part.findNote(p, noteId);
