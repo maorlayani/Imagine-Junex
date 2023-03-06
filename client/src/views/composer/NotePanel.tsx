@@ -301,7 +301,7 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 					return;
 				}
 				const isLastMeasure = Music.isLastMeasure(score.music, n.measureId);
-				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m.timeSignature, m.durationDivs, isLastMeasure);
+				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m, score.music, isLastMeasure);
 				onUpdateScore();
 			});
 		},

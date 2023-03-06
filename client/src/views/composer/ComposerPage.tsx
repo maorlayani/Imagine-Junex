@@ -165,8 +165,9 @@ export const ComposerPage = () => {
 			}
 			note.isRest = false;
 			note.fullName = noteFullName;
+			const measure = Score.findMeasure(score, note.measureId);
+			// if (measure) console.log('to be tied:', note.startDiv + note.durationDivs > measure.durationDivs, note);
 			if (MusicalHelper.parseNote(noteFullName).alter === '#') {
-				const measure = Score.findMeasure(score, note.measureId);
 				if (measure && !measure.useSharps) {
 					note.fullName = MusicalHelper.toggleSharpAndFlat(note.fullName);
 				}
