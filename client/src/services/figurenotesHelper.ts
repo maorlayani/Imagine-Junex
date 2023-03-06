@@ -1,5 +1,4 @@
 import { MusicalHelper } from './musicalHelper';
-
 export enum FnOctaveShape {
 	'X' = 'X',
 	'SQUARE' = 'SQUARE',
@@ -69,7 +68,9 @@ export class FigurenotesHelper {
 				style = {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
-					background: `linear-gradient(45deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%), linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%)`,
+					left: '1px',
+					background: _setBackgroundX(noteColor),
+					// background: `linear-gradient(45deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%), linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%)`,
 					//borderRadius: `10%`,
 				};
 				break;
@@ -136,4 +137,15 @@ export class FigurenotesHelper {
 
 		return style;
 	}
+}
+
+// Helper function: takes the note color and gives the complicated X shape with linear-gradients
+function _setBackgroundX(color: string) {
+	return `linear-gradient(to bottom right, white 11%, black 14%, transparent 15%),
+			linear-gradient(to top left, white 11%, black 14%, transparent 15%),
+			linear-gradient(to top right, white 11%, black 14%, transparent 15%),
+			linear-gradient(to bottom left, white 11%, black 14%, transparent 15%),
+			linear-gradient(to top right, transparent 36%, ${color} 37%, ${color} 62%, transparent 62%),
+			linear-gradient(to bottom right, transparent 34%, black 36%, ${color} 37%, ${color} 62%, black 63%, transparent 65%),
+			linear-gradient(to top right, transparent 34%, black 36%, ${color} 37%, ${color} 62%, black 63%, transparent 65%)`;
 }
