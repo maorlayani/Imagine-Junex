@@ -55,7 +55,6 @@ export class Part implements PartModel {
 		}
 		const n = Part.findNote(p, noteId);
 		// if note exists: in case it is the last measure, see if it doesnt over pass it
-		if (n) console.log(`requested divs: ${n.startDiv + newDurationDivs}, duration: ${measureDurationDivs}`);
 		if (n && isLastMeasure && n.startDiv + newDurationDivs > measureDurationDivs) return false;
 		// if note exists and it isnt already the same duration defined to it
 		return !!n && n.durationDivs !== newDurationDivs;
