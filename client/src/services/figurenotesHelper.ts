@@ -80,7 +80,8 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					backgroundColor: `${noteColor}`,
-					border: '1px solid black',
+					border: '2px solid',
+					zIndex: '20',
 					//borderRadius: `10%`,
 				};
 				break;
@@ -90,8 +91,9 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					background: `radial-gradient(${noteColor} 67%, rgb(0, 0, 0) 70%, rgb(255,255,255) 73%)`,
+					zIndex: '20',
 					// backgroundColor: `${noteColor}`,
-					// borderRadius: `50%`,
+					borderRadius: `50%`,
 				};
 				break;
 			}
@@ -106,6 +108,7 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 30%, black 32%, transparent 34%), linear-gradient(-116.5deg, transparent 30%, black 32%, ${noteColor} 34%)`,
+					zIndex: '20',
 				};
 				break;
 			}
@@ -116,7 +119,8 @@ export class FigurenotesHelper {
 					backgroundColor: `${noteColor}`,
 					transform: `rotate(45deg) scale(0.71)`,
 					transformOrigin: `${size / 2}${units} ${size / 2}${units}`,
-					border: '1px solid black',
+					border: '2px solid',
+					zIndex: '20',
 					//borderRadius: `10%`,
 				};
 				break;

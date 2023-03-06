@@ -351,6 +351,9 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																			MusicalHelper.parseNote(n.fullName).step,
 																			n.isBoomwhacker,
 																		)}`,
+																		borderTop: '2px solid',
+																		borderRight: '2px solid',
+																		borderBottom: '2px solid',
 																		top: `${scoreSettings.quarterSize - 19}px`,
 																		height: `17px`,
 																		left:
