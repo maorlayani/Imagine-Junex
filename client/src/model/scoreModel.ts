@@ -36,7 +36,7 @@ export interface NoteModel {
 	durationDivs: number; //e.g. 24
 	isTiedToNext: boolean; //e.g. false
 	isTiedToPrev: boolean; //e.g. false
-	isBoomwhacker?: boolean;
+	isBoomwhacker?: boolean; // a boomwhacker note has a slightly different display
 }
 export interface ChordModel {
 	kind: EntityKind; //"CHORD"
@@ -75,6 +75,7 @@ export interface MeasureModel {
 	tempoBpm: number; //e.g. 120
 	scaleRoot: string; //e.g. "C"
 	scaleMode: string; //e.g. "Ionian"
+	tiedDivs?: number; //(num of divs - length) if the previous measure has a note continuing to this part
 	useSharps: boolean;
 	parts: PartModel[];
 }

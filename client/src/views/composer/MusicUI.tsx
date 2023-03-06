@@ -308,7 +308,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 									</Box>
 								</Box>
 							)}
-							{/* now according to the indexes we got from getRows(), make the parts (the melodies or text that run in parallel with the rows along the play) */}
+							{/* a part can prolonged or shortened note or text */}
 							{music.measures[mIndex].parts.map((p, pIndex) => (
 								<Box key={`${rIndex}-${mIndex}-${p.id}`} style={{ width: `${sizeVars.partWidth}px` }}>
 									{Music.isPartVisible(music, p.partInfoId) && p.partType === PartType.FN_LVL_1 && (
