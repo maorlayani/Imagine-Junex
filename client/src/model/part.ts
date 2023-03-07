@@ -4,6 +4,8 @@ import { MusicalHelper } from '../services/musicalHelper';
 import { PartInfo } from './partInfo';
 import { Note } from './note';
 import { Chord } from './chord';
+import { Measure } from './measure';
+import { SelectionItem } from '../atoms/selectionAtom';
 
 export class Part implements PartModel {
 	kind: EntityKind = EntityKind.PART;
@@ -49,14 +51,7 @@ export class Part implements PartModel {
 		return p.notes.find((n) => n.id === noteId) || null;
 	}
 
-	static getNextMeasure(measure: MeasureModel, music: MusicModel): MeasureModel {
-		// get the part's measure,
-		// save the index of this part
-		// const partIdx = measure.parts.findIndex((part) => part.id === p.id);
-		// run through the score to get the next measure, and return the part of the same index
-		const nextMeasureIdx = music.measures.findIndex((m) => m.id === measure.id) + 1;
-		return music.measures[nextMeasureIdx];
-	}
+
 
 	static canChangeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measureDurationDivs: number, isLastMeasure: boolean): boolean {
 		if (p.partType !== PartType.FN_LVL_1) {
@@ -72,7 +67,7 @@ export class Part implements PartModel {
 		// return !!n && n.durationDivs !== newDurationDivs && n.startDiv + newDurationDivs <= measureDurationDivs;
 	}
 
-	static changeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measure: MeasureModel, music: MusicModel, isLastMeasure: boolean) {
+	static changeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measure: MeasureModel, music: MusicModel, isLastMeasure: boolean, selection?: SelectionItem) {
 		if (!Part.canChangeNoteDuration(p, noteId, newDurationDivs, measure.durationDivs, isLastMeasure)) {
 			return;
 		}
@@ -80,7 +75,6 @@ export class Part implements PartModel {
 		if (!targetNote) {
 			return;
 		}
-		console.log(measure.tiedDivs);
 		const targetNoteIndex = p.notes.findIndex((n) => n.id === noteId);
 		const deltaDivs = newDurationDivs - targetNote.durationDivs;
 		const isShorting = deltaDivs < 0;
@@ -108,22 +102,29 @@ export class Part implements PartModel {
 			}
 			// since number of notes per measure can change (1/2, 3/8 etc.) this index will tell us how many notes will be in the part when we finish parsing
 			let lastOkIndex = -1;
+			let tiedDivs = 0;
+			let endDiv: number;
 			p.notes[p.notes.length - 1].durationDivs = measure.durationDivs;
 			p.notes.forEach((n, i) => {
-				// set every note to end at the beginning of where the last note ended
+				// set every note to start at the beginning of where the last note ended
 				n.startDiv = i === 0 ? 0 : p.notes[i - 1].startDiv + p.notes[i - 1].durationDivs;
-				const endDiv = n.startDiv + n.durationDivs;
+				endDiv = n.startDiv + n.durationDivs;
 				// if the note ends after the measure
+				// important: this can happen several times in a loop, since we hadn't cut all parts to the measure length yet..
 				if (endDiv >= measure.durationDivs) {
-					// todo: save the amount of divs cut, and give it to the next measure to parse the tail first
-					const nextMeasure = Part.getNextMeasure(measure, music);
-					nextMeasure.tiedDivs = endDiv - measure.durationDivs;
+					// if we are at the last index, save the remaining divs about to cut
 					n.durationDivs = Math.max(n.durationDivs - (endDiv - measure.durationDivs), 0);
 					if (n.durationDivs > 0) {
 						lastOkIndex = i;
+						if (n.id === selection?.noteId) {
+							tiedDivs = n.startDiv + newDurationDivs - measure.durationDivs;
+						}
 					}
 				}
 			});
+			if (tiedDivs) {
+				Part.addTiedNote(p.notes[lastOkIndex], p, measure, music, tiedDivs);
+			}
 			if (lastOkIndex > -1) {
 				p.notes.length = lastOkIndex + 1;
 			}
@@ -149,4 +150,21 @@ export class Part implements PartModel {
 			Chord.resetIds(c, measureId, p.id);
 		});
 	}
+
+	static addTiedNote(note: NoteModel, part: PartModel, measure: MeasureModel, music: MusicModel, tiedDivs: number) {
+		// find the index of the selected part, for a reference in the next measure
+		const partIdx = measure.parts.findIndex((p) => p.id === part.id);
+		// run through the score to get the next measure, and then get the part of the same index
+		const nextMeasureIdx = music.measures.findIndex((m) => m.id === measure.id) + 1;
+		const nextPart = music.measures[nextMeasureIdx].parts[partIdx];
+		// define the first note of the corresponding part and set it's duration
+		const { beatDurationDivs } = MusicalHelper.parseTimeSignature(measure.timeSignature);
+
+		const tiedNote = new Note(CommonHelper.getRandomId(), nextPart.measureId, nextPart.id, note.fullName, false, 0, beatDurationDivs, false, true);
+		note.isTiedToNext = true;
+		tiedNote.isTiedToPrev = true;
+		nextPart.notes[0] = tiedNote;
+		Part.changeNoteDuration(nextPart, nextPart.notes[0].id, tiedDivs, measure, music, false);
+	}
+
 }

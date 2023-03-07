@@ -301,11 +301,11 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 					return;
 				}
 				const isLastMeasure = Music.isLastMeasure(score.music, n.measureId);
-				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m, score.music, isLastMeasure);
+				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m, score.music, isLastMeasure, selection[0]);
 				onUpdateScore();
 			});
 		},
-		[score, getSelectedNotes, onUpdateScore],
+		[score, getSelectedNotes, onUpdateScore, selection],
 	);
 
 	return (

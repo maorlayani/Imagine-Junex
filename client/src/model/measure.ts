@@ -1,4 +1,4 @@
-import { EntityKind, MeasureModel, NoteModel, PartModel } from './scoreModel';
+import { EntityKind, MeasureModel, MusicModel, NoteModel, PartModel } from './scoreModel';
 import { CommonHelper } from '../services/commonHelper';
 import { MusicalHelper } from '../services/musicalHelper';
 import { PartInfo } from './partInfo';
@@ -126,4 +126,10 @@ export class Measure implements MeasureModel {
 			Part.resetIds(p, m.id);
 		});
 	}
+
+	// static setTiedTail(measure: MeasureModel, durationDivs: number, partInfoId: string, music: MusicModel){
+	// 	// measure.parts[0].partInfoId = partInfoId;
+	// 	console.log('tying a tail');
+	// 	// Part.changeNoteDuration(measure.parts[0], measure.parts[0].notes[0].id, durationDivs, measure, music, false);
+	// }
 }

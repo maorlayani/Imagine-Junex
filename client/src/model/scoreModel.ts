@@ -75,7 +75,6 @@ export interface MeasureModel {
 	tempoBpm: number; //e.g. 120
 	scaleRoot: string; //e.g. "C"
 	scaleMode: string; //e.g. "Ionian"
-	tiedDivs?: number; //(num of divs - length) if the previous measure has a note continuing to this part
 	useSharps: boolean;
 	parts: PartModel[];
 }
