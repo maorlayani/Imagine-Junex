@@ -351,23 +351,24 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																			MusicalHelper.parseNote(n.fullName).step,
 																			n.isBoomwhacker,
 																		)}`,
-																		borderTop: '2px solid',
-																		borderRight: '2px solid',
-																		borderBottom: '2px solid',
+																		borderTop: '1.5px solid',
+																		borderRight: '1.5px solid',
+																		borderBottom: '1.5px solid',
 																		top: `${scoreSettings.quarterSize - 19}px`,
 																		height: `17px`,
 																		left:
 																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${scoreSettings.quarterSize - 2 - 7}px`
+																				? `${scoreSettings.quarterSize - 2 - 8}px`
 																				: `${scoreSettings.quarterSize / 2 - 1}px`,
 																		width:
 																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 7}px`
-																				: `${scoreSettings.quarterSize / 2 -
-																				1 +
-																				((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
-																				1
-																				}px`,
+																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 8}px`
+																				: `${
+																						scoreSettings.quarterSize / 2 -
+																						1 +
+																						((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
+																						1
+																				  }px`,
 																	}}
 																/>
 															)}
@@ -389,10 +390,11 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																	className={classes.noteName}
 																	style={{
 																		top: `${scoreSettings.quarterSize / 2 - 9}px`,
-																		left: `${MusicalHelper.parseNote(n.fullName).alter
-																			? scoreSettings.quarterSize / 2 - 9
-																			: scoreSettings.quarterSize / 2 - 5.5
-																			}px`,
+																		left: `${
+																			MusicalHelper.parseNote(n.fullName).alter
+																				? scoreSettings.quarterSize / 2 - 9
+																				: scoreSettings.quarterSize / 2 - 5.5
+																		}px`,
 																		fontSize: `${getPartFontSize(p.partInfoId) || 12}px`,
 																	}}
 																>
@@ -412,8 +414,9 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 													className={classes.measureInnerBorders}
 													style={{
 														height: `${scoreSettings.quarterSize}px`,
-														left: `${sizeVars.isQuarters ? scoreSettings.quarterSize * (idx + 1) - 1 : (scoreSettings.quarterSize * (idx + 1) - 1) / 2
-															}px`,
+														left: `${
+															sizeVars.isQuarters ? scoreSettings.quarterSize * (idx + 1) - 1 : (scoreSettings.quarterSize * (idx + 1) - 1) / 2
+														}px`,
 													}}
 												/>
 											))}
