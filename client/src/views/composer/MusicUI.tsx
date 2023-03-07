@@ -338,7 +338,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		`${MusicalHelper.parseNote(n.fullName).step}${MusicalHelper.parseNote(n.fullName).octave}`,
 																		scoreSettings.quarterSize - 2,
 																		'px',
-																		n.isBoomwhacker,
+																		n,
 																	),
 																}}
 															/>
@@ -356,19 +356,18 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		borderBottom: '1.5px solid',
 																		top: `${scoreSettings.quarterSize - 19}px`,
 																		height: `17px`,
-																		left:
-																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${scoreSettings.quarterSize - 2 - 8}px`
-																				: `${scoreSettings.quarterSize / 2 - 1}px`,
-																		width:
-																			MusicalHelper.parseNote(n.fullName).octave <= 3
-																				? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 8}px`
-																				: `${
-																						scoreSettings.quarterSize / 2 -
-																						1 +
-																						((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 -
-																						1
-																				  }px`,
+																		left: n.isTiedToPrev
+																			? '-6px'
+																			: MusicalHelper.parseNote(n.fullName).octave <= 3
+																			? `${scoreSettings.quarterSize - 2 - 8}px`
+																			: `${scoreSettings.quarterSize / 2 - 1}px`,
+																		width: n.isTiedToPrev
+																			? `${(n.durationDivs * scoreSettings.quarterSize) / 24 + 3}px`
+																			: MusicalHelper.parseNote(n.fullName).octave <= 3
+																			? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 8}px`
+																			: `${
+																					scoreSettings.quarterSize / 2 - 1 + ((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1
+																			  }px`,
 																	}}
 																/>
 															)}

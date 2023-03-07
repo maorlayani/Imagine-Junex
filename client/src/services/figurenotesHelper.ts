@@ -1,3 +1,4 @@
+import { NoteModel } from '../model/scoreModel';
 import { MusicalHelper } from './musicalHelper';
 export enum FnOctaveShape {
 	'X' = 'X',
@@ -58,11 +59,16 @@ export class FigurenotesHelper {
 	static getBlackIndices(): number[] {
 		return [1, 3, 6, 8, 10];
 	}
-	static getSymbolStyle(noteFullName: string, size: number, units: string, isBoomWhacker: boolean | undefined) {
+	static getSymbolStyle(noteFullName: string, size: number, units: string, note?: NoteModel) {
 		let style: any;
 		const noteDetails = MusicalHelper.parseNote(noteFullName);
-		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, isBoomWhacker);
-		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, isBoomWhacker);
+		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, note?.isBoomwhacker);
+		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, note?.isBoomwhacker);
+		if (note?.isTiedToPrev) {
+			return {
+				zIndex: -1,
+			};
+		}
 		switch (octaveShape) {
 			case FnOctaveShape.X: {
 				style = {
