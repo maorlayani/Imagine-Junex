@@ -343,7 +343,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																}}
 															/>
 															{/* the "tail" in case the note is longer than a standard unit */}
-															{n.durationDivs > 24 && (
+															{(n.durationDivs > 24 || n.isTiedToNext) && (
 																<Box
 																	className={classes.longNoteTail}
 																	style={{
