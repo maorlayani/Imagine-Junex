@@ -65,9 +65,16 @@ export class FigurenotesHelper {
 		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, note?.isBoomwhacker);
 		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, note?.isBoomwhacker);
 		if (note?.isTiedToPrev) {
-			return {
+			style = {
+				top: `${size / 2}${units}`,
+				left: `-1px`,
+				width: `${size}${units}`,
+				height: `${size / 2}${units}`,
+				border: '1.5px solid',
+				backgroundColor: `${noteColor}`,
 				zIndex: -1,
 			};
+			return style;
 		}
 		switch (octaveShape) {
 			case FnOctaveShape.X: {

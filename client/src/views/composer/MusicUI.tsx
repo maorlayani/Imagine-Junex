@@ -308,7 +308,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 									</Box>
 								</Box>
 							)}
-							{/* a part can prolonged or shortened note or text */}
+							{/* a part can a measure or text, several parts (instruments/singers) can be played at the measure at once*/}
 							{music.measures[mIndex].parts.map((p, pIndex) => (
 								<Box key={`${rIndex}-${mIndex}-${p.id}`} style={{ width: `${sizeVars.partWidth}px` }}>
 									{Music.isPartVisible(music, p.partInfoId) && p.partType === PartType.FN_LVL_1 && (
@@ -342,7 +342,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																	),
 																}}
 															/>
-															{/* the "tail" in case the note is longer than a standard unit */}
+															{/* the "tail" in case the note is longer than a standard unit, or is tied to a note in the next measure */}
 															{(n.durationDivs > 24 || n.isTiedToNext) && (
 																<Box
 																	className={classes.longNoteTail}

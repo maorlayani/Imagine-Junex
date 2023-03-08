@@ -18,6 +18,7 @@ import { selectionAtom } from '../../atoms/selectionAtom';
 import { DraggedItemType } from '../../atoms/draggedItemAtom';
 import { DraggablePanel } from '../../components/DraggablePanel';
 import { AnalyticsHelper, EventCategory } from '../../services/analyticsHelper';
+import { Note } from '../../model/note';
 
 export interface NotePanelProps {
 	score: ScoreModel | null;
@@ -241,12 +242,14 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 			}
 			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'delete note');
 			notes.forEach((n) => {
+				if (n.isTiedToNext && score) Note.untieNextNote(n, score);
+				if (n.isTiedToPrev) n.isTiedToPrev = false;
 				n.fullName = '';
 				n.isRest = true;
 			});
 			onUpdateScore();
 		},
-		[getSelectedNotes, onUpdateScore],
+		[getSelectedNotes, onUpdateScore, score],
 	);
 
 	const handleChangePitch = useCallback(
