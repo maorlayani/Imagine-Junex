@@ -242,7 +242,7 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 			}
 			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'delete note');
 			notes.forEach((n) => {
-				if (n.isTiedToNext && score) Note.untieNextNote(n, score);
+				if (n.isTiedToNext && score) Note.getTiedNote(n, score, true).isTiedToPrev = false;
 				if (n.isTiedToPrev) n.isTiedToPrev = false;
 				n.fullName = '';
 				n.isRest = true;

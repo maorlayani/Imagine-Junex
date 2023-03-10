@@ -39,18 +39,19 @@ export class Note implements NoteModel {
 		n.partId = partId;
 	}
 
-	static untieNextNote(note: NoteModel, score: ScoreModel) {
+	static getTiedNote(note: NoteModel, score: ScoreModel, isNext: boolean): NoteModel {
 		const { measures } = score.music;
-		// find the note's measure index
 		const measureIdx = measures.findIndex((m) => m.id === note.measureId);
-		// use it to find the note's part index
 		const partIdx = measures[measureIdx].parts.findIndex((p) => p.id === note.partId);
-		// find the parallel part in the next measure, and set isTied to false
-		// oddly satisfying
-		measures[measureIdx + 1].parts[partIdx].notes[0].isTiedToPrev = false;
+		if (!isNext) {
+			const lastNoteIdx = measures[measureIdx - 1].parts[partIdx].notes.length - 1;
+			return measures[measureIdx - 1].parts[partIdx].notes[lastNoteIdx];
+		}
+		return measures[measureIdx + 1].parts[partIdx].notes[0];
 	}
 
 	// todo: I might just take the score as the parameter instead of all these.. But it is likely to be a much worse solution due to complexity
+	// todo: Also no need for the new Note()
 	static addTiedNote(note: NoteModel, part: PartModel, measure: MeasureModel, music: MusicModel, tiedDivs: number) {
 		// find the index of the selected part, for a reference in the next measure
 		const partIdx = measure.parts.findIndex((p) => p.id === part.id);

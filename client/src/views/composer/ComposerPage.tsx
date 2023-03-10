@@ -16,6 +16,7 @@ import { MusicalHelper } from '../../services/musicalHelper';
 import { PlayerPanel } from './PlayerPanel';
 import { diskSaveTimeAtom } from '../../atoms/diskSaveTimeAtom';
 import { BoomWhacker } from '../../components/BoomWhacker';
+import { Note } from '../../model/note';
 
 export const ComposerPage = () => {
 	const useStyles = makeStyles(() => ({
@@ -165,12 +166,19 @@ export const ComposerPage = () => {
 			}
 			note.isRest = false;
 			note.fullName = noteFullName;
+			console.log(note.isTiedToNext);
 			const measure = Score.findMeasure(score, note.measureId);
-			// if (measure) console.log('to be tied:', note.startDiv + note.durationDivs > measure.durationDivs, note);
 			if (MusicalHelper.parseNote(noteFullName).alter === '#') {
 				if (measure && !measure.useSharps) {
 					note.fullName = MusicalHelper.toggleSharpAndFlat(note.fullName);
 				}
+			}
+			// if note is tied  in front: change the tied note too
+			if (note.isTiedToNext) Note.getTiedNote(note, score, true).fullName = noteFullName;
+			// if note is tied from behind: sever the tie between them
+			if (note.isTiedToPrev) {
+				note.isTiedToPrev = false;
+				Note.getTiedNote(note, score, false).isTiedToNext = false;
 			}
 			handleScoreUpdated();
 		},

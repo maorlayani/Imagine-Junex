@@ -148,5 +148,4 @@ export class Part implements PartModel {
 			Chord.resetIds(c, measureId, p.id);
 		});
 	}
-
 }
