@@ -42,7 +42,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			zIndex: 10,
 			borderInlineEnd: '2px dotted rgba(0,0,0,0.6)',
 			'&:last-of-type': {
-				borderInlineEnd: 'none',
+				borderInlineEnd: '3px solid black',
 			},
 		},
 		measureNumberAnchor: {

@@ -67,10 +67,12 @@ export class FigurenotesHelper {
 		if (note?.isTiedToPrev) {
 			style = {
 				top: `${size / 2}${units}`,
-				left: `-1px`,
-				width: `${size}${units}`,
+				left: `-4px`,
+				width: `${size + 3}${units}`,
 				height: `${size / 2}${units}`,
-				border: '1.5px solid',
+				borderStyle: 'solid',
+				borderColor: 'black',
+				borderWidth: '1.5px 1.5px 1.5px 0',
 				backgroundColor: `${noteColor}`,
 				zIndex: -1,
 			};

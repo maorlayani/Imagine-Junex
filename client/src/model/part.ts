@@ -1,10 +1,9 @@
-import { EntityKind, MeasureModel, MusicModel, NoteModel, PartModel, PartType, ScoreModel } from './scoreModel';
+import { EntityKind, MeasureModel, MusicModel, NoteModel, PartModel, PartType } from './scoreModel';
 import { CommonHelper } from '../services/commonHelper';
 import { MusicalHelper } from '../services/musicalHelper';
 import { PartInfo } from './partInfo';
 import { Note } from './note';
 import { Chord } from './chord';
-import { Measure } from './measure';
 import { SelectionItem } from '../atoms/selectionAtom';
 
 export class Part implements PartModel {
@@ -51,8 +50,6 @@ export class Part implements PartModel {
 		return p.notes.find((n) => n.id === noteId) || null;
 	}
 
-
-
 	static canChangeNoteDuration(p: PartModel, noteId: string, newDurationDivs: number, measureDurationDivs: number, isLastMeasure: boolean): boolean {
 		if (p.partType !== PartType.FN_LVL_1) {
 			return false;
@@ -63,7 +60,7 @@ export class Part implements PartModel {
 		// if note exists and it isnt already the same duration defined to it
 		return !!n && n.durationDivs !== newDurationDivs;
 
-		// Uri's original code
+		// Uri's original code:
 		// return !!n && n.durationDivs !== newDurationDivs && n.startDiv + newDurationDivs <= measureDurationDivs;
 	}
 

@@ -50,7 +50,7 @@ export class Note implements NoteModel {
 		measures[measureIdx + 1].parts[partIdx].notes[0].isTiedToPrev = false;
 	}
 
-	// todo: I might just take the score as the parameter instead of all these.. But on second thought this solution may take less looping around
+	// todo: I might just take the score as the parameter instead of all these.. But it is likely to be a much worse solution due to complexity
 	static addTiedNote(note: NoteModel, part: PartModel, measure: MeasureModel, music: MusicModel, tiedDivs: number) {
 		// find the index of the selected part, for a reference in the next measure
 		const partIdx = measure.parts.findIndex((p) => p.id === part.id);
