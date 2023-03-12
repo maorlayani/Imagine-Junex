@@ -133,12 +133,12 @@ export const BoomWhacker = memo(({ onBoomWhackerNote }: BoomWhackerProps) => {
 			{isExpanded && <ExpandLessIcon onClick={handleClickCollapse} className={classes.expandCollapseButton} />}
 			<Box className={`${classes.content} ${isExpanded ? '' : classes.contentCollapsed}`}>
 				<Box className={`${classes.keynotes}`}>
-					{['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C-oct'].map((note, idx) => {
+					{['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C-oct'].map((note, idx, arr) => {
 						return (
 							<Box
 								key={`boomwhacker-note-${note}`}
 								className={classes.boomWhackerStick}
-								style={{ height: `${(idx + 1) * 14 + 16}px`, backgroundColor: FigurenotesHelper.getNoteColor(note, true) }}
+								style={{ height: `${(arr.length - idx) * 14 + 16}px`, backgroundColor: FigurenotesHelper.getNoteColor(note, true) }}
 								data-note-name={note}
 								onMouseEnter={handleMouseEnter}
 								onMouseLeave={handleMouseLeave}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { Link } from 'react-router-dom';
@@ -20,7 +20,6 @@ export const HomePage = React.memo(() => {
 		},
 	}));
 	const classes = useStyles();
-
 	return (
 		<Box id="HomePage" className={classes.root}>
 			<Box>

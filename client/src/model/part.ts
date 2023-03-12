@@ -122,6 +122,8 @@ export class Part implements PartModel {
 			// if we got any divs cut to fit into the measure, add a tied note at the next one
 			if (tiedDivs) {
 				Note.addTiedNote(p.notes[lastOkIndex], p, measure, music, tiedDivs);
+			} else {
+				targetNote.isTiedToNext = false;
 			}
 			if (lastOkIndex > -1) {
 				p.notes.length = lastOkIndex + 1;

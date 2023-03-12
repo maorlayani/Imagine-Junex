@@ -170,6 +170,7 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 		},
 		figureNoteSymbol: {
 			position: 'absolute',
+			pointerEvents: 'none',
 			bottom: 7,
 			'.small-piano &': {
 				bottom: 3,
