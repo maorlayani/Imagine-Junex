@@ -39,7 +39,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 		measureInnerBorders: {
 			position: 'absolute',
-			zIndex: 10,
+			zIndex: 1,
 			borderInlineEnd: '2px dotted rgba(0,0,0,0.6)',
 			'&:last-of-type': {
 				borderInlineEnd: '3px solid black',
@@ -68,7 +68,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		note: {
 			position: 'relative',
 			fontSize: 10,
-			border: '1px solid #fff',
+			// borderInlineEnd: '1px dotted #000',
 			borderBlock: '1px solid #eee',
 			'&.selected': {
 				backgroundColor: '#ddf',
@@ -343,7 +343,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																}}
 															/>
 															{/* the "tail" in case the note is longer than a standard unit, or is tied to a note in the next measure */}
-															{(n.durationDivs > 24 || n.isTiedToNext) && (
+															{(n.durationDivs > 24 || n.isTiedToNext || n.isTiedToPrev) && (
 																<Box
 																	className={classes.longNoteTail}
 																	style={{
@@ -354,20 +354,21 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		borderTop: '1.5px solid',
 																		borderRight: '1.5px solid',
 																		borderBottom: '1.5px solid',
-																		top: `${scoreSettings.quarterSize - 19}px`,
-																		height: `17px`,
-																		left: n.isTiedToPrev
-																			? '-6px'
-																			: MusicalHelper.parseNote(n.fullName).octave <= 3
-																			? `${scoreSettings.quarterSize - 2 - 8}px`
-																			: `${scoreSettings.quarterSize / 2 - 1}px`,
-																		width: n.isTiedToPrev
-																			? `${(n.durationDivs * scoreSettings.quarterSize) / 24 + 3}px`
-																			: MusicalHelper.parseNote(n.fullName).octave <= 3
-																			? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1 + 8}px`
-																			: `${
-																					scoreSettings.quarterSize / 2 - 1 + ((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 - 1
-																			  }px`,
+																		top: `${Math.floor(scoreSettings.quarterSize / 2)}px`,
+																		height: `${scoreSettings.quarterSize / 2}px`,
+																		...FigurenotesHelper.parseTail(n, scoreSettings.quarterSize), // calculate specifically the 'left' and 'width' properties
+																		// left:
+																		// 	MusicalHelper.parseNote(n.fullName).octave <= 3
+																		// 		? `${scoreSettings.quarterSize - 2 - 8}px`
+																		// 		: `${scoreSettings.quarterSize / 2 - 1}px`,
+																		// width:
+																		// 	MusicalHelper.parseNote(n.fullName).octave <= 3
+																		// 		? `${((n.durationDivs - 24) * scoreSettings.quarterSize) / 24 + 7}px`
+																		// 		: `${
+																		// 				scoreSettings.quarterSize / 2 -
+																		// 				1 +
+																		// 				((n.durationDivs - 24) * scoreSettings.quarterSize) / 24
+																		// 		  }px`,
 																	}}
 																/>
 															)}

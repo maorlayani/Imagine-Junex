@@ -66,15 +66,15 @@ export class FigurenotesHelper {
 		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, note?.isBoomwhacker);
 		if (note?.isTiedToPrev) {
 			style = {
-				top: `${size / 2}${units}`,
-				left: `-4px`,
-				width: `${size + 3}${units}`,
-				height: `${size / 2}${units}`,
-				borderStyle: 'solid',
-				borderColor: 'black',
-				borderWidth: '1.5px 1.5px 1.5px 0',
-				backgroundColor: `${noteColor}`,
-				zIndex: -1,
+				// top: `${size / 2}${units}`,
+				// left: `${-size / 2}${units}`,
+				// width: `${size + 3}${units}`,
+				// height: `${size / 2}${units}`,
+				// borderStyle: 'solid',
+				// borderColor: 'black',
+				// borderWidth: '1.5px 1.5px 1.5px 0',
+				// backgroundColor: `${noteColor}`,
+				// zIndex: -1,
 			};
 			return style;
 		}
@@ -155,6 +155,30 @@ export class FigurenotesHelper {
 		}
 
 		return style;
+	}
+
+	static parseTail(note: NoteModel, quarterSize: number) {
+		// const left =  MusicalHelper.parseNote(note.fullName).octave <= 3 ? `${quarterSize - 2 - 8}px` : `${quarterSize / 2 - 1}px`;
+		// const width = note.isTiedToPrev ? `${quarterSize}px` :
+		// 	MusicalHelper.parseNote(note.fullName).octave <= 3
+		// 		? `${((note.durationDivs - 24) * quarterSize) / 24 + 7}px`
+		// 		: `${quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24}px`;
+
+		let leftValue = 0;
+		let widthValue = 0;
+		// width:
+		// if note is tied, add in 1/2 of the quarterSize either for a seamless transition with the next, or to cover up reducing the left value with prev
+		widthValue = Math.max(quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24, quarterSize);
+		if (note.isTiedToPrev && note.durationDivs > 24) widthValue += quarterSize / 2;
+		// if (note.isTiedToNext) widthValue += quarterSize / 2;
+
+		// left
+		// if tied to previous left is 0, else start at the half of the original note block
+
+		leftValue = note.isTiedToPrev ? 0 : quarterSize / 2 - 1;
+		const left = leftValue + 'px';
+		const width = widthValue + 'px';
+		return { left, width };
 	}
 }
 
