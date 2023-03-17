@@ -158,24 +158,24 @@ export class FigurenotesHelper {
 	}
 
 	static parseTail(note: NoteModel, quarterSize: number) {
-		// const left =  MusicalHelper.parseNote(note.fullName).octave <= 3 ? `${quarterSize - 2 - 8}px` : `${quarterSize / 2 - 1}px`;
-		// const width = note.isTiedToPrev ? `${quarterSize}px` :
-		// 	MusicalHelper.parseNote(note.fullName).octave <= 3
-		// 		? `${((note.durationDivs - 24) * quarterSize) / 24 + 7}px`
-		// 		: `${quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24}px`;
-
 		let leftValue = 0;
 		let widthValue = 0;
 		// width:
 		// if note is tied, add in 1/2 of the quarterSize either for a seamless transition with the next, or to cover up reducing the left value with prev
-		widthValue = Math.max(quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24, quarterSize);
+		widthValue = Math.max(quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24, quarterSize / 2);
 		if (note.isTiedToPrev && note.durationDivs > 24) widthValue += quarterSize / 2;
-		// if (note.isTiedToNext) widthValue += quarterSize / 2;
-
+		
 		// left
 		// if tied to previous left is 0, else start at the half of the original note block
-
 		leftValue = note.isTiedToPrev ? 0 : quarterSize / 2 - 1;
+		if (note.isTiedToNext) {
+			// slightly step into the next measure for more seamless transition
+			widthValue += quarterSize / 16 - 1;
+			if (MusicalHelper.parseNote(note.fullName).octave <= 3) {
+				// the tail at the X shape notes starts slightly more to the right
+				leftValue += quarterSize / 4.4;
+			}
+		}
 		const left = leftValue + 'px';
 		const width = widthValue + 'px';
 		return { left, width };
