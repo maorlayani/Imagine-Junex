@@ -40,7 +40,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		measureInnerBorders: {
 			position: 'absolute',
 			zIndex: 1,
-			borderInlineEnd: '2px dotted rgba(0,0,0,0.6)',
+			borderInlineEnd: '2px solid rgba(0,0,0,0.6)',
 			'&:last-of-type': {
 				borderInlineEnd: '3px solid black',
 			},
@@ -357,6 +357,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		top: `${Math.floor(scoreSettings.quarterSize / 2)}px`,
 																		height: `${scoreSettings.quarterSize / 2}px`,
 																		...FigurenotesHelper.parseTail(n, scoreSettings.quarterSize), // calculate specifically the 'left' and 'width' properties
+																		// legacy code (unresponsive to changes to quarter size):
 																		// left:
 																		// 	MusicalHelper.parseNote(n.fullName).octave <= 3
 																		// 		? `${scoreSettings.quarterSize - 2 - 8}px`

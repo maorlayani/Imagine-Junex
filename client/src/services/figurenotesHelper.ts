@@ -122,7 +122,7 @@ export class FigurenotesHelper {
 					//borderRadius: `10%`,
 					width: `${size}${units}`,
 					height: `${size}${units}`,
-					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 30%, black 32%, transparent 34%), linear-gradient(-116.5deg, transparent 30%, black 32%, ${noteColor} 34%)`,
+					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 31%, black 33%, transparent 35%), linear-gradient(-116.5deg, transparent 31%, black 33%, ${noteColor} 34%)`,
 					zIndex: '20',
 				};
 				break;
@@ -161,7 +161,8 @@ export class FigurenotesHelper {
 		let leftValue = 0;
 		let widthValue = 0;
 		// width:
-		// if note is tied, add in 1/2 of the quarterSize either for a seamless transition with the next, or to cover up reducing the left value with prev
+		//  at least half a quarter (to the end of the first note), plus another quarter for each extra note it lasts
+		//  Or (if there's one quarter or less left to the end of the measure), simply half the note
 		widthValue = Math.max(quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24, quarterSize / 2);
 		if (note.isTiedToPrev && note.durationDivs > 24) widthValue += quarterSize / 2;
 		
