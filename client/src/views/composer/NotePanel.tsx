@@ -179,24 +179,30 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 					setCurDuration(n.durationDivs);
 				}
 			}
+			const isBoomwhacker = n?.isBoomwhacker === undefined ? false : true
+
 			let noteDurationsOK: any = {};
 			noteDurationOptions.forEach((o) => {
-				noteDurationsOK[o.durationDivs] = selection.every((item) => {
+				noteDurationsOK[o.durationDivs] = !isBoomwhacker ? selection.every((item) => {
 					m = item.measureId && Music.findMeasure(score.music, item.measureId);
 					const isLastMeasure = Music.isLastMeasure(score.music, item.measureId);
 					if (!m) return false;
 					return Measure.canChangeNoteDuration(m, item.partId, item.noteId, o.durationDivs, isLastMeasure);
-				});
+				}) : false
 			});
+			setCanDelete(true);
 			setCanChangeDuration(noteDurationsOK);
+			if (isBoomwhacker) return
 			setCanPitchDown(true);
 			setCanPitchUp(true);
 			setCanOctaveDown(true);
 			setCanOctaveUp(true);
-			setCanDelete(true);
+
 			selection.forEach((item) => {
 				n = item.noteId && Music.findNote(score.music, item.noteId);
+
 				d = n ? MusicalHelper.parseNote(n.fullName) : null;
+
 				if (!n || n.isRest || !d || (d.step === 'C' && !d.alter && d.octave === MusicalHelper.minOctave)) {
 					setCanPitchDown(false);
 				}
@@ -324,9 +330,8 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 							data-duration-divs={ndo.durationDivs}
 							onClick={handleClickNoteDuration}
 							disabled={!canChangeDuration[ndo.durationDivs]}
-							className={`${classes.actionButton} ${classes.noteDurationButton} ${canChangeDuration[ndo.durationDivs] ? '' : 'disabled'} ${
-								ndo.durationDivs === curDuration ? 'current' : ''
-							}`}
+							className={`${classes.actionButton} ${classes.noteDurationButton} ${canChangeDuration[ndo.durationDivs] ? '' : 'disabled'} ${ndo.durationDivs === curDuration ? 'current' : ''
+								}`}
 						>
 							{ndo.label}
 						</Button>
