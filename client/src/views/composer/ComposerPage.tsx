@@ -155,8 +155,8 @@ export const ComposerPage = () => {
 		[resetSelection, resetCopiedMeasureId, setDiskSaveTime, setSaveNotification],
 	);
 
-	const handlePianoNote = useCallback(
-		function handlePianoNote(noteFullName: string) {
+	const handleNote = useCallback(
+		function handleNote(noteFullName: string, isBoomwhacker?: boolean) {
 			if (!score || selection.length !== 1) {
 				return;
 			}
@@ -166,41 +166,44 @@ export const ComposerPage = () => {
 			}
 			note.isRest = false;
 			note.fullName = noteFullName;
-			console.log(note.isTiedToNext);
-			const measure = Score.findMeasure(score, note.measureId);
-			if (MusicalHelper.parseNote(noteFullName).alter === '#') {
-				if (measure && !measure.useSharps) {
-					note.fullName = MusicalHelper.toggleSharpAndFlat(note.fullName);
+			if (isBoomwhacker) note.isBoomwhacker = true;
+			else {
+				note.isBoomwhacker = false;
+				const measure = Score.findMeasure(score, note.measureId);
+				if (MusicalHelper.parseNote(noteFullName).alter === '#') {
+					if (measure && !measure.useSharps) {
+						note.fullName = MusicalHelper.toggleSharpAndFlat(note.fullName);
+					}
 				}
-			}
-			// if note is tied  in front: change the tied note too
-			if (note.isTiedToNext) Note.getTiedNote(note, score, true).fullName = noteFullName;
-			// if note is tied from behind: sever the tie between them
-			if (note.isTiedToPrev) {
-				note.isTiedToPrev = false;
-				Note.getTiedNote(note, score, false).isTiedToNext = false;
+				// if note is tied  in front: change the tied note too
+				if (note.isTiedToNext) Note.getTiedNote(note, score, true).fullName = noteFullName;
+				// if note is tied from behind: sever the tie between them
+				if (note.isTiedToPrev) {
+					note.isTiedToPrev = false;
+					Note.getTiedNote(note, score, false).isTiedToNext = false;
+				}
 			}
 			handleScoreUpdated();
 		},
 		[score, selection, handleScoreUpdated],
 	);
 
-	const handleBoomWhackerNote = useCallback(
-		function handleBoomWhackerNote(noteFullName: string) {
-			if (!score || selection.length !== 1) {
-				return;
-			}
-			const note = Score.findNote(score, selection[0].noteId);
-			if (!note) {
-				return;
-			}
-			note.isRest = false;
-			note.fullName = noteFullName;
-			note.isBoomwhacker = true;
-			handleScoreUpdated();
-		},
-		[score, selection, handleScoreUpdated],
-	);
+	// const handleBoomWhackerNote = useCallback(
+	// 	function handleBoomWhackerNote(noteFullName: string) {
+	// 		if (!score || selection.length !== 1) {
+	// 			return;
+	// 		}
+	// 		const note = Score.findNote(score, selection[0].noteId);
+	// 		if (!note) {
+	// 			return;
+	// 		}
+	// 		note.isRest = false;
+	// 		note.fullName = noteFullName;
+	// 		note.isBoomwhacker = true;
+	// 		handleScoreUpdated();
+	// 	},
+	// 	[score, selection, handleScoreUpdated],
+	// );
 
 	return (
 		<Box id="ComposerPage" className={classes.root}>
@@ -213,7 +216,7 @@ export const ComposerPage = () => {
 						<StageUI score={score} onUpdateScore={handleScoreUpdated} />
 					</Box>
 					<Box className={classes.pianoAnchor}>
-						<Piano smallPiano={true} onPianoNote={handlePianoNote} />
+						<Piano smallPiano={true} onPianoNote={handleNote} />
 					</Box>
 					<Box className={classes.notePanelAnchor}>
 						<NotePanel score={score} onUpdateScore={handleScoreUpdated} />
@@ -228,7 +231,7 @@ export const ComposerPage = () => {
 						<PartsPanel music={score.music} onUpdateScore={handleScoreUpdated} />
 					</Box>
 					<Box className={classes.boomWhackerPanelAnchor}>
-						<BoomWhacker onBoomWhackerNote={handleBoomWhackerNote} />
+						<BoomWhacker onBoomWhackerNote={handleNote} />
 					</Box>
 				</>
 			)}

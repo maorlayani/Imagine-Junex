@@ -25,7 +25,7 @@ export class Part implements PartModel {
 		if (partInfo.partType === PartType.FN_LVL_1) {
 			const { beats, beatDurationDivs } = MusicalHelper.parseTimeSignature(timeSignature);
 			for (let i = 0; i < beats; i++) {
-				const note = new Note(CommonHelper.getRandomId(), measureId, id, '', true, i * beatDurationDivs, beatDurationDivs, false, false);
+				const note = new Note(CommonHelper.getRandomId(), measureId, id, '', true, i * beatDurationDivs, beatDurationDivs, false, false, false);
 				notes.push(note);
 			}
 		}
@@ -78,7 +78,7 @@ export class Part implements PartModel {
 		if (isShorting) {
 			targetNote.durationDivs = newDurationDivs;
 			const curStartDivs = targetNote.startDiv + targetNote.durationDivs;
-			const newNote = new Note(CommonHelper.getRandomId(), targetNote.measureId, targetNote.partId, '', true, curStartDivs, -deltaDivs, false, false);
+			const newNote = new Note(CommonHelper.getRandomId(), targetNote.measureId, targetNote.partId, '', true, curStartDivs, -deltaDivs, false, false, false);
 			p.notes.splice(targetNoteIndex + 1, 0, newNote);
 		} else {
 			targetNote.durationDivs = newDurationDivs;

@@ -85,7 +85,7 @@ export const BoomWhacker = memo(({ onBoomWhackerNote }: BoomWhackerProps) => {
 			const noteFullName = noteName[0] + octaveNumber;
 			SoundHelper.startNote(noteFullName);
 			if (onBoomWhackerNote) {
-				onBoomWhackerNote(noteFullName);
+				onBoomWhackerNote(noteFullName, true);
 			}
 		},
 		[onBoomWhackerNote],

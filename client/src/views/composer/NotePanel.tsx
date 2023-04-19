@@ -179,20 +179,22 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 					setCurDuration(n.durationDivs);
 				}
 			}
-			const isBoomwhacker = n?.isBoomwhacker === undefined ? false : true
+			const isBoomwhacker = n?.isBoomwhacker;
 
 			let noteDurationsOK: any = {};
 			noteDurationOptions.forEach((o) => {
-				noteDurationsOK[o.durationDivs] = !isBoomwhacker ? selection.every((item) => {
-					m = item.measureId && Music.findMeasure(score.music, item.measureId);
-					const isLastMeasure = Music.isLastMeasure(score.music, item.measureId);
-					if (!m) return false;
-					return Measure.canChangeNoteDuration(m, item.partId, item.noteId, o.durationDivs, isLastMeasure);
-				}) : false
+				noteDurationsOK[o.durationDivs] = !isBoomwhacker
+					? selection.every((item) => {
+							m = item.measureId && Music.findMeasure(score.music, item.measureId);
+							const isLastMeasure = Music.isLastMeasure(score.music, item.measureId);
+							if (!m) return false;
+							return Measure.canChangeNoteDuration(m, item.partId, item.noteId, o.durationDivs, isLastMeasure);
+					  })
+					: false;
 			});
 			setCanDelete(true);
 			setCanChangeDuration(noteDurationsOK);
-			if (isBoomwhacker) return
+			if (isBoomwhacker) return;
 			setCanPitchDown(true);
 			setCanPitchUp(true);
 			setCanOctaveDown(true);
@@ -329,9 +331,10 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 							key={ndo.durationDivs}
 							data-duration-divs={ndo.durationDivs}
 							onClick={handleClickNoteDuration}
-							disabled={!canChangeDuration[ndo.durationDivs]}
-							className={`${classes.actionButton} ${classes.noteDurationButton} ${canChangeDuration[ndo.durationDivs] ? '' : 'disabled'} ${ndo.durationDivs === curDuration ? 'current' : ''
-								}`}
+							// disabled={!canChangeDuration[ndo.durationDivs]}
+							className={`${classes.actionButton} ${classes.noteDurationButton} ${canChangeDuration[ndo.durationDivs] ? '' : ''} ${
+								ndo.durationDivs === curDuration ? 'current' : ''
+							}`}
 						>
 							{ndo.label}
 						</Button>

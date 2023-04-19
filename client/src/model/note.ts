@@ -16,10 +16,11 @@ export class Note implements NoteModel {
 		public durationDivs: number,
 		public isTiedToNext: boolean,
 		public isTiedToPrev: boolean,
+		public isBoomwhacker: boolean,
 	) {}
 
 	static createFromModel(n: NoteModel) {
-		return new Note(n.id, n.measureId, n.partId, n.fullName, n.isRest, n.startDiv, n.durationDivs, n.isTiedToNext, n.isTiedToPrev);
+		return new Note(n.id, n.measureId, n.partId, n.fullName, n.isRest, n.startDiv, n.durationDivs, n.isTiedToNext, n.isTiedToPrev, n.isBoomwhacker);
 	}
 
 	static toggleAlter(n: NoteModel, useSharps: boolean) {
@@ -61,7 +62,7 @@ export class Note implements NoteModel {
 		// define the first note of the corresponding part and set it's duration
 		const { beatDurationDivs } = MusicalHelper.parseTimeSignature(measure.timeSignature);
 
-		const tiedNote = new Note(CommonHelper.getRandomId(), nextPart.measureId, nextPart.id, note.fullName, false, 0, beatDurationDivs, false, true);
+		const tiedNote = new Note(CommonHelper.getRandomId(), nextPart.measureId, nextPart.id, note.fullName, false, 0, beatDurationDivs, false, true, false);
 		note.isTiedToNext = true;
 		tiedNote.isTiedToPrev = true;
 		nextPart.notes[0] = tiedNote;
