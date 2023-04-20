@@ -188,23 +188,6 @@ export const ComposerPage = () => {
 		[score, selection, handleScoreUpdated],
 	);
 
-	// const handleBoomWhackerNote = useCallback(
-	// 	function handleBoomWhackerNote(noteFullName: string) {
-	// 		if (!score || selection.length !== 1) {
-	// 			return;
-	// 		}
-	// 		const note = Score.findNote(score, selection[0].noteId);
-	// 		if (!note) {
-	// 			return;
-	// 		}
-	// 		note.isRest = false;
-	// 		note.fullName = noteFullName;
-	// 		note.isBoomwhacker = true;
-	// 		handleScoreUpdated();
-	// 	},
-	// 	[score, selection, handleScoreUpdated],
-	// );
-
 	return (
 		<Box id="ComposerPage" className={classes.root}>
 			<Box className={classes.toolbarContainer}>

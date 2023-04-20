@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box';
@@ -119,22 +119,6 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 	const classes = useStyles();
 
 	const selection = useRecoilValue(selectionAtom);
-	const [canChangeDuration, setCanChangeDuration] = useState<any>({
-		6: false,
-		12: false,
-		18: false,
-		24: false,
-		36: false,
-		48: false,
-		72: false,
-		96: false,
-	});
-	const [canPitchDown, setCanPitchDown] = useState(false);
-	const [canPitchUp, setCanPitchUp] = useState(false);
-	const [canOctaveDown, setCanOctaveDown] = useState(false);
-	const [canOctaveUp, setCanOctaveUp] = useState(false);
-	const [canDelete, setCanDelete] = useState(false);
-	const [curDuration, setCurDuration] = useState(0);
 	const draggablePanelContentRef = useRef(null);
 
 	const [isExpanded, setIsExpanded] = useState(true);
@@ -144,86 +128,6 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 	const handleClickCollapse = useCallback(function handleClickCollapse() {
 		setIsExpanded(false);
 	}, []);
-
-	const noteDurationOptions = useMemo(
-		() => [
-			{ durationDivs: 6, label: '1/16' },
-			{ durationDivs: 12, label: '1/8' },
-			{ durationDivs: 18, label: '3/16' },
-			{ durationDivs: 24, label: '1/4' },
-			{ durationDivs: 36, label: '3/8' },
-			{ durationDivs: 48, label: '1/2' },
-			{ durationDivs: 72, label: '3/4' },
-			{ durationDivs: 96, label: '1' },
-		],
-		[],
-	);
-
-	useEffect(
-		function enableNotePanelActions() {
-			setCurDuration(0);
-			setCanPitchDown(false);
-			setCanPitchUp(false);
-			setCanOctaveDown(false);
-			setCanOctaveUp(false);
-			setCanDelete(false);
-			if (!score || !selection || selection.length === 0) {
-				return;
-			}
-			let m;
-			let n;
-			let d;
-			if (selection.length === 1 && selection[0].noteId) {
-				n = Music.findNote(score.music, selection[0].noteId);
-				if (n) {
-					setCurDuration(n.durationDivs);
-				}
-			}
-			const isBoomwhacker = n?.isBoomwhacker;
-
-			let noteDurationsOK: any = {};
-			noteDurationOptions.forEach((o) => {
-				noteDurationsOK[o.durationDivs] = !isBoomwhacker
-					? selection.every((item) => {
-							m = item.measureId && Music.findMeasure(score.music, item.measureId);
-							const isLastMeasure = Music.isLastMeasure(score.music, item.measureId);
-							if (!m) return false;
-							return Measure.canChangeNoteDuration(m, item.partId, item.noteId, o.durationDivs, isLastMeasure);
-					  })
-					: false;
-			});
-			setCanDelete(true);
-			setCanChangeDuration(noteDurationsOK);
-			if (isBoomwhacker) return;
-			setCanPitchDown(true);
-			setCanPitchUp(true);
-			setCanOctaveDown(true);
-			setCanOctaveUp(true);
-
-			selection.forEach((item) => {
-				n = item.noteId && Music.findNote(score.music, item.noteId);
-
-				d = n ? MusicalHelper.parseNote(n.fullName) : null;
-
-				if (!n || n.isRest || !d || (d.step === 'C' && !d.alter && d.octave === MusicalHelper.minOctave)) {
-					setCanPitchDown(false);
-				}
-				if (!n || n.isRest || !d || (d.step === 'B' && !d.alter && d.octave === MusicalHelper.maxOctave)) {
-					setCanPitchUp(false);
-				}
-				if (!n || n.isRest || !d || d.octave === MusicalHelper.minOctave) {
-					setCanOctaveDown(false);
-				}
-				if (!n || n.isRest || !d || d.octave === MusicalHelper.maxOctave) {
-					setCanOctaveUp(false);
-				}
-				if (!n || n.isRest) {
-					setCanDelete(false);
-				}
-			});
-		},
-		[score, selection, noteDurationOptions],
-	);
 
 	const getSelectedNotes = useCallback(
 		function getSelectedNotes(includeRests: boolean) {
@@ -319,6 +223,47 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 		[score, getSelectedNotes, onUpdateScore, selection],
 	);
 
+	const noteOptions = useMemo(() => {
+		const durations = [
+			{ durationDivs: 6, label: '1/16', canChange: true },
+			{ durationDivs: 12, label: '1/8', canChange: true },
+			{ durationDivs: 18, label: '3/16', canChange: true },
+			{ durationDivs: 24, label: '1/4', canChange: true },
+			{ durationDivs: 36, label: '3/8', canChange: true },
+			{ durationDivs: 48, label: '1/2', canChange: true },
+			{ durationDivs: 72, label: '3/4', canChange: true },
+			{ durationDivs: 96, label: '1', canChange: true },
+		];
+		const note = getSelectedNotes(true)[0];
+		if (score && note) {
+			const isLastMeasure = Music.isLastMeasure(score.music, note.measureId);
+			if (isLastMeasure) {
+				const measure = Music.findMeasure(score.music, note.measureId);
+				measure &&
+					durations.forEach((val) => {
+						val.canChange = isLastMeasure && note.startDiv + val.durationDivs <= measure.durationDivs;
+					});
+			}
+		}
+		//  each of the following boolean expressions corresponds with a button on the panel, and wheither its disabled or not
+		const { octave, step } = MusicalHelper.parseNote(note.fullName);
+		const first = !note.isRest && !note.isBoomwhacker;
+		const octaveUp = first && octave < MusicalHelper.maxOctave;
+		const octaveDown = first && octave > MusicalHelper.minOctave;
+		const semiUp = octaveUp && step !== 'B';
+		const semiDown = octaveDown && step !== 'C';
+		const canDelete = !note.isRest;
+		const noteOptions = {
+			durations,
+			octaveUp,
+			octaveDown,
+			semiUp,
+			semiDown,
+			canDelete,
+		};
+		return noteOptions;
+	}, [getSelectedNotes, score]);
+
 	return (
 		<div id="NotePanel" ref={draggablePanelContentRef} className={`${classes.root} ${isExpanded ? '' : classes.rootCollapsed}`}>
 			<DraggablePanel contentRef={draggablePanelContentRef} title="Note" draggedItemType={DraggedItemType.NOTE_PANEL} />
@@ -326,15 +271,13 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 			{isExpanded && <ExpandLessIcon onClick={handleClickCollapse} className={classes.expandCollapseButton} />}
 			<Box className={`${classes.content} ${isExpanded ? '' : classes.contentCollapsed}`}>
 				<Box className={`${classes.panel} ${classes.panelDuration}`}>
-					{noteDurationOptions.map((ndo) => (
+					{noteOptions.durations.map((ndo) => (
 						<Button
 							key={ndo.durationDivs}
 							data-duration-divs={ndo.durationDivs}
 							onClick={handleClickNoteDuration}
-							// disabled={!canChangeDuration[ndo.durationDivs]}
-							className={`${classes.actionButton} ${classes.noteDurationButton} ${canChangeDuration[ndo.durationDivs] ? '' : ''} ${
-								ndo.durationDivs === curDuration ? 'current' : ''
-							}`}
+							disabled={!ndo.canChange}
+							className={`${classes.actionButton} ${classes.noteDurationButton}`}
 						>
 							{ndo.label}
 						</Button>
@@ -343,30 +286,30 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 				<Box className={classes.buttonsRow}>
 					<Box>
 						<Box className={classes.panel}>
-							<IconButton onClick={handleChangePitch} data-direction="down" data-amount="semitone" className={`${classes.actionButton}`} disabled={!canPitchDown}>
+							<IconButton onClick={handleChangePitch} data-direction="down" data-amount="semitone" className={`${classes.actionButton}`} disabled={!noteOptions.semiDown}>
 								<ArrowDropDownOutlinedIcon titleAccess="Semitone down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="semitone" className={`${classes.actionButton}`} disabled={!canPitchUp}>
+							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="semitone" className={`${classes.actionButton}`} disabled={!noteOptions.semiUp}>
 								<ArrowDropUpOutlinedIcon titleAccess="Semitone up" />
 							</IconButton>
-							<Typography variant="body1" className={`${classes.panelText} ${canPitchUp || canPitchDown ? '' : 'disabled'}`}>
+							<Typography variant="body1" className={`${classes.panelText}`}>
 								Semitone
 							</Typography>
 						</Box>
 						<Box className={classes.panel}>
-							<IconButton onClick={handleChangePitch} data-direction="down" data-amount="octave" className={`${classes.actionButton}`} disabled={!canOctaveDown}>
+							<IconButton onClick={handleChangePitch} data-direction="down" data-amount="octave" className={`${classes.actionButton}`} disabled={!noteOptions.octaveDown}>
 								<ArrowDropDownOutlinedIcon titleAccess="Octave down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="octave" className={`${classes.actionButton}`} disabled={!canOctaveUp}>
+							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="octave" className={`${classes.actionButton}`} disabled={!noteOptions.octaveUp}>
 								<ArrowDropUpOutlinedIcon titleAccess="Octave up" />
 							</IconButton>
-							<Typography variant="body1" className={`${classes.panelText} ${canPitchUp || canPitchDown ? '' : 'disabled'}`}>
+							<Typography variant="body1" className={`${classes.panelText}`}>
 								Octave
 							</Typography>
 						</Box>
 					</Box>
 					<Box className={`${classes.panel} ${classes.panelButtonOnly}`}>
-						<IconButton onClick={handleClickDelete} className={classes.actionButton} disabled={!canDelete}>
+						<IconButton onClick={handleClickDelete} className={classes.actionButton} disabled={!noteOptions.canDelete}>
 							<DeleteForeverIcon titleAccess="Delete note" />
 						</IconButton>
 					</Box>
