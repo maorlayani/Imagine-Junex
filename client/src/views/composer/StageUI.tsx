@@ -33,6 +33,10 @@ export const StageUI = ({ score, onUpdateScore }: StageUIProps) => {
 				opacity: 1,
 				overflow: 'visible',
 			},
+			'@media print and (orientation: landscape)': {
+				marginTop: 16,
+				marginLeft: '15%',
+			},
 		},
 		content: {
 			display: 'grid',
