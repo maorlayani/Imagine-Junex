@@ -21,6 +21,10 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	const useStyles = makeStyles(() => ({
 		root: {
 			position: 'relative',
+
+			// '@media print and (orientation: landscape)': {
+			// 	marginLeft: '25%',
+			// },
 		},
 		row: {
 			position: 'relative',

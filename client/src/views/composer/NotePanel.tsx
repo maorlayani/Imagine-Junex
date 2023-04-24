@@ -225,14 +225,14 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 
 	const noteOptions = useMemo(() => {
 		const durations = [
-			{ durationDivs: 6, label: '1/16', canChange: false },
-			{ durationDivs: 12, label: '1/8', canChange: false },
-			{ durationDivs: 18, label: '3/16', canChange: false },
-			{ durationDivs: 24, label: '1/4', canChange: false },
-			{ durationDivs: 36, label: '3/8', canChange: false },
-			{ durationDivs: 48, label: '1/2', canChange: false },
-			{ durationDivs: 72, label: '3/4', canChange: false },
-			{ durationDivs: 96, label: '1', canChange: false },
+			{ durationDivs: 6, label: '1/16', canChange: true },
+			{ durationDivs: 12, label: '1/8', canChange: true },
+			{ durationDivs: 18, label: '3/16', canChange: true },
+			{ durationDivs: 24, label: '1/4', canChange: true },
+			{ durationDivs: 36, label: '3/8', canChange: true },
+			{ durationDivs: 48, label: '1/2', canChange: true },
+			{ durationDivs: 72, label: '3/4', canChange: true },
+			{ durationDivs: 96, label: '1', canChange: true },
 		];
 		const note = getSelectedNotes(true)[0];
 		if (score && note) {
