@@ -358,7 +358,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		borderTop: '1.5px solid',
 																		borderRight: '1.5px solid',
 																		borderBottom: '1.5px solid',
-																		top: `${Math.floor(scoreSettings.quarterSize / 2)}px`,
+																		top: `${Math.floor(scoreSettings.quarterSize / 2 - 2)}px`,
 																		height: `${scoreSettings.quarterSize / 2}px`,
 																		...FigurenotesHelper.parseTail(n, scoreSettings.quarterSize), // calculate specifically the 'left' and 'width' properties
 																		// legacy code (unresponsive to changes to quarter size):
