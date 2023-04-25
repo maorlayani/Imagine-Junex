@@ -145,6 +145,7 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					background: `radial-gradient(rgb(255,255,255) 29%, rgb(0,0,0) 33%, ${noteColor} 37%, ${noteColor} 67%, rgb(0, 0, 0) 70%, transparent 73%)`,
+					zIndex: '20'
 				};
 				break;
 			}
@@ -160,12 +161,13 @@ export class FigurenotesHelper {
 	static parseTail(note: NoteModel, quarterSize: number) {
 		let leftValue = 0;
 		let widthValue = 0;
+
 		// width:
 		//  at least half a quarter (to the end of the first note), plus another quarter for each extra note it lasts
 		//  Or (if there's one quarter or less left to the end of the measure), simply half the note
 		widthValue = Math.max(quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24, quarterSize / 2);
 		if (note.isTiedToPrev && note.durationDivs > 24) widthValue += quarterSize / 2;
-		
+
 		// left
 		// if tied to previous left is 0, else start at the half of the original note block
 		leftValue = note.isTiedToPrev ? 0 : quarterSize / 2 - 1;
@@ -179,6 +181,7 @@ export class FigurenotesHelper {
 		}
 		const left = leftValue + 'px';
 		const width = widthValue + 'px';
+
 		return { left, width };
 	}
 }
