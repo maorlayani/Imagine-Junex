@@ -145,7 +145,7 @@ export class FigurenotesHelper {
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					background: `radial-gradient(rgb(255,255,255) 29%, rgb(0,0,0) 33%, ${noteColor} 37%, ${noteColor} 67%, rgb(0, 0, 0) 70%, transparent 73%)`,
-					zIndex: '20'
+					zIndex: '20',
 				};
 				break;
 			}
