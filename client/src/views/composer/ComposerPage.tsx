@@ -211,7 +211,6 @@ export const ComposerPage = () => {
 
 	const handleRedoUndo = useCallback(
 		(val: number) => {
-			//accepts the value at which to move the index (redo 1, or undo -1)
 			if (scoreHistoryIdx <= 0 || scoreHistoryIdx >= scoreHistory.length) return;
 			setScoreHistoryIdx((prev) => (prev += val));
 			// todo set score as scoreHistory[scoreHistoryIdx]
