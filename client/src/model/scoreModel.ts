@@ -101,3 +101,11 @@ export interface ScoreModel {
 	scoreSettings: ScoreSettingsModel;
 	music: MusicModel;
 }
+export interface ScoreModelNew {
+	kind: EntityKind; //"SCORE"
+	id: string; //internal ID
+	timestamp: number; //timestamp in ms
+	scoreInfo: ScoreInfoModel;
+	scoreSettings: ScoreSettingsModel;
+	musicHistory: MusicModel[]; //holds all different versions of the melody, each time it is changed
+}
