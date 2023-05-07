@@ -3,10 +3,11 @@ import Box from '@material-ui/core/Box';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { MusicalHelper } from '../../services/musicalHelper';
 
-// components
-import { ScoreModel } from '../../model/scoreModel';
-import { Score } from '../../model/score';
 import { Note } from '../../model/note';
+import { Score } from '../../model/score';
+import { ScoreModel } from '../../model/scoreModel';
+
+// components
 import { StageUI } from './StageUI';
 import { NotePanel } from './NotePanel';
 import { PartsPanel } from './PartsPanel';
