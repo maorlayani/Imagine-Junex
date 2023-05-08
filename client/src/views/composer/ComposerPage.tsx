@@ -102,12 +102,12 @@ export const ComposerPage = () => {
 	const [musicHistory, setMusicHistory] = useState<MusicModel[]>([]);
 	const [musicHistoryIdx, setMusicHistoryIdx] = useState(0);
 	useEffect(() => {
-		if (!score) return;
+		if (!score || score.music) return;
 		setScore((prev) => {
-			return { ...prev, music: musicHistory[musicHistoryIdx] } as ScoreModel;
+			return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [musicHistoryIdx]);
+	}, [musicHistoryIdx, musicHistory]);
 
 	const setSaveNotification = useCallback(function setSaveNotification(isActive: boolean) {
 		const flashAnimationClassName = 'animate-flash';
@@ -140,13 +140,14 @@ export const ComposerPage = () => {
 
 	const handleScoreUpdated = useCallback(
 		function handleScoreUpdated() {
-			//! the useEffect will handle this instead
-			// setScore((s) => {
-			// 	return { ...s } as ScoreModel;
-			// });
-			if (score) {
-				if (MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) return;
-				setMusicHistory((prev) => [...prev, score.music]);
+			//! must be here or current and music history will sit on the same pointer
+			setScore((s) => {
+				return { ...s } as ScoreModel;
+			});
+			debugger;
+			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
+				console.log('musics were not same');
+				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
 				// not length - 1 since setState is async
 				setMusicHistoryIdx(musicHistory.length);
 			}
@@ -218,7 +219,8 @@ export const ComposerPage = () => {
 
 	const handleRedoUndo = useCallback(
 		(val: number) => {
-			if (musicHistoryIdx <= 0 || musicHistoryIdx >= musicHistory.length) return;
+			//todo fix logic, so it will work also at first and last indexes
+			if ((val === -1 && musicHistoryIdx + val < 0) || (val === 1 && musicHistoryIdx + val > musicHistory.length - 1)) return;
 			setMusicHistoryIdx((prev) => (prev += val));
 			resetSelection();
 		},
