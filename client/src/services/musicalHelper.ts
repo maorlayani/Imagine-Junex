@@ -114,4 +114,51 @@ export class MusicalHelper {
 		}
 		return newNoteName + newOctave;
 	}
+	//todo compare it with a simple json stringify
+	//used to compare between 2 music objects, to see if we should replace the current one
+	static deepEqual(obj1: any, obj2: any): boolean {
+		// Check if the objects are strictly equal
+		if (obj1 === obj2) {
+			return true;
+		}
+
+		// Check if the objects have the same type and are not null
+		if (typeof obj1 !== typeof obj2 || obj1 === null || obj2 === null) {
+			return false;
+		}
+
+		//if they arent an object and can safely be compared by '==='
+		if (typeof obj1 !== 'object') {
+			return obj1 === obj2;
+		} else {
+			if (Array.isArray(obj1) !== Array.isArray(obj2)) {
+				return false;
+			}
+			if (Array.isArray(obj1)) {
+				if (obj1.length !== obj2.length) {
+					return false;
+				}
+				for (let i = 0; i < obj1.length; i++) {
+					if (!this.deepEqual(obj1[i], obj2[i])) return false;
+				}
+			} else {
+				// Check if the objects have the same number of keys
+				const keys1 = Object.keys(obj1);
+				const keys2 = Object.keys(obj2);
+				if (keys1.length !== keys2.length) {
+					return false;
+				}
+				// Compare the values of each key in obj1 with the corresponding key in obj2
+				for (const key of keys1) {
+					const value1 = obj1[key];
+					const value2 = obj2[key];
+					// If the values are not equal, return false
+					if (!this.deepEqual(value1, value2)) return false;
+				}
+			}
+		}
+
+		// If we've made it this far, the objects are equal
+		return true;
+	}
 }

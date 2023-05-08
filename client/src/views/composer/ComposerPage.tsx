@@ -101,12 +101,13 @@ export const ComposerPage = () => {
 	const [diskSaveTime, setDiskSaveTime] = useRecoilState(diskSaveTimeAtom);
 	const [musicHistory, setMusicHistory] = useState<MusicModel[]>([]);
 	const [musicHistoryIdx, setMusicHistoryIdx] = useState(0);
-	// todo add the first music to history when we mount
 	useEffect(() => {
 		if (!score) return;
-		setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score))]);
-		setMusicHistoryIdx(musicHistory.length - 1);
-	}, [score, musicHistory.length, setMusicHistory]);
+		setScore((prev) => {
+			return { ...prev, music: musicHistory[musicHistoryIdx] } as ScoreModel;
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [musicHistoryIdx]);
 
 	const setSaveNotification = useCallback(function setSaveNotification(isActive: boolean) {
 		const flashAnimationClassName = 'animate-flash';
@@ -139,9 +140,16 @@ export const ComposerPage = () => {
 
 	const handleScoreUpdated = useCallback(
 		function handleScoreUpdated() {
-			setScore((s) => {
-				return { ...s } as ScoreModel;
-			});
+			//! the useEffect will handle this instead
+			// setScore((s) => {
+			// 	return { ...s } as ScoreModel;
+			// });
+			if (score) {
+				if (MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) return;
+				setMusicHistory((prev) => [...prev, score.music]);
+				// not length - 1 since setState is async
+				setMusicHistoryIdx(musicHistory.length);
+			}
 			const nowTime = new Date().getTime();
 			const delayMilliseconds = 1000 * 60 * 5;
 			// if we hadn't saved the score for more than 5 mins after last change, flash the save btn
@@ -149,7 +157,7 @@ export const ComposerPage = () => {
 				setSaveNotification(true);
 			}
 		},
-		[diskSaveTime, setSaveNotification],
+		[diskSaveTime, musicHistory, musicHistoryIdx, score, setSaveNotification],
 	);
 
 	const handleScoreSaved = useCallback(
@@ -210,22 +218,21 @@ export const ComposerPage = () => {
 
 	const handleRedoUndo = useCallback(
 		(val: number) => {
-			debugger;
 			if (musicHistoryIdx <= 0 || musicHistoryIdx >= musicHistory.length) return;
 			setMusicHistoryIdx((prev) => (prev += val));
-			// todo set score as musicHistory[musicHistoryIdx]
+			resetSelection();
 		},
-		[musicHistory.length, musicHistoryIdx],
+		[musicHistory.length, musicHistoryIdx, resetSelection],
 	);
-	console.log('current history:', musicHistory);
+	console.log('history:', musicHistory);
+	console.log('historyidx:', musicHistoryIdx);
 
-	console.log('current score idx:', musicHistoryIdx);
 	return (
 		<Box id="ComposerPage" className={classes.root}>
 			<Box className={classes.toolbarContainer}>
 				<ComposerToolbar score={score} onChangeScore={handleScoreChanged} onSaveScore={handleScoreSaved} onCloseScore={handleScoreClosed} />
 			</Box>
-			{score && (
+			{score !== null && (
 				<>
 					<Box className={classes.stageContainer}>
 						<StageUI score={score} onUpdateScore={handleScoreUpdated} onRedoUndo={handleRedoUndo} />
