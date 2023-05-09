@@ -144,12 +144,11 @@ export const ComposerPage = () => {
 
 	const handleScoreUpdated = useCallback(
 		function handleScoreUpdated() {
-			//! must be here or current and music history will sit on the same pointer
 			setScore((s) => {
 				return { ...s } as ScoreModel;
 			});
+			//todo see if deepEqual is actually more efficient than comparing by JSON.stringify (probably not)
 			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
-				console.log('musics were not same');
 				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
 				// not length - 1 since setState is async
 				setMusicHistoryIdx(musicHistory.length);
@@ -228,9 +227,6 @@ export const ComposerPage = () => {
 		},
 		[musicHistory.length, musicHistoryIdx, resetSelection],
 	);
-	console.log('history:', musicHistory);
-	console.log('historyidx:', musicHistoryIdx);
-
 	return (
 		<Box id="ComposerPage" className={classes.root}>
 			<Box className={classes.toolbarContainer}>
