@@ -101,11 +101,15 @@ export const ComposerPage = () => {
 	const [diskSaveTime, setDiskSaveTime] = useRecoilState(diskSaveTimeAtom);
 	const [musicHistory, setMusicHistory] = useState<MusicModel[]>([]);
 	const [musicHistoryIdx, setMusicHistoryIdx] = useState(0);
+
 	useEffect(() => {
-		if (!score || score.music) return;
-		setScore((prev) => {
-			return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
-		});
+		if (!score) return;
+		if (!musicHistory.length) setMusicHistory([score.music]);
+		else {
+			setScore((prev) => {
+				return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
+			});
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [musicHistoryIdx, musicHistory]);
 
@@ -144,7 +148,6 @@ export const ComposerPage = () => {
 			setScore((s) => {
 				return { ...s } as ScoreModel;
 			});
-			debugger;
 			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
 				console.log('musics were not same');
 				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
@@ -219,8 +222,7 @@ export const ComposerPage = () => {
 
 	const handleRedoUndo = useCallback(
 		(val: number) => {
-			//todo fix logic, so it will work also at first and last indexes
-			if ((val === -1 && musicHistoryIdx + val < 0) || (val === 1 && musicHistoryIdx + val > musicHistory.length - 1)) return;
+			if (musicHistoryIdx + val < 0 || musicHistoryIdx + val > musicHistory.length - 1) return;
 			setMusicHistoryIdx((prev) => (prev += val));
 			resetSelection();
 		},
