@@ -5,7 +5,7 @@ import { MusicalHelper } from '../../services/musicalHelper';
 
 import { Note } from '../../model/note';
 import { Score } from '../../model/score';
-import { ScoreModel } from '../../model/scoreModel';
+import { MusicModel, ScoreModel } from '../../model/scoreModel';
 
 // components
 import { StageUI } from './StageUI';
@@ -21,7 +21,6 @@ import { BoomWhacker } from '../../components/BoomWhacker';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import { selectionAtom } from '../../atoms/selectionAtom';
 import { diskSaveTimeAtom } from '../../atoms/diskSaveTimeAtom';
-import { scoreHistoryAtom } from '../../atoms/scoreHistoryAtom';
 import { copiedMeasureIdAtom } from '../../atoms/copiedMeasureIdAtom';
 
 export const ComposerPage = () => {
@@ -98,17 +97,22 @@ export const ComposerPage = () => {
 	const [score, setScore] = useState<ScoreModel | null>(null);
 	const selection = useRecoilValue(selectionAtom);
 	const resetSelection = useResetRecoilState(selectionAtom);
-	const resetHistory = useResetRecoilState(scoreHistoryAtom);
 	const resetCopiedMeasureId = useResetRecoilState(copiedMeasureIdAtom);
 	const [diskSaveTime, setDiskSaveTime] = useRecoilState(diskSaveTimeAtom);
-	const [scoreHistory, setScoreHistory] = useRecoilState(scoreHistoryAtom);
-	const [scoreHistoryIdx, setScoreHistoryIdx] = useState(scoreHistory.length - 1);
+	const [musicHistory, setMusicHistory] = useState<MusicModel[]>([]);
+	const [musicHistoryIdx, setMusicHistoryIdx] = useState(0);
+
 	useEffect(() => {
 		if (!score) return;
-		setScoreHistory((prev) => [...prev, JSON.parse(JSON.stringify(score))]);
-		setScoreHistoryIdx(scoreHistory.length - 1);
+		if (!musicHistory.length) setMusicHistory([score.music]);
+		else {
+			setScore((prev) => {
+				return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
+			});
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [score, setScoreHistory]);
+	}, [musicHistoryIdx, musicHistory]);
+
 	const setSaveNotification = useCallback(function setSaveNotification(isActive: boolean) {
 		const flashAnimationClassName = 'animate-flash';
 		const saveBtnElm = document.getElementById('save-btn');
@@ -129,13 +133,13 @@ export const ComposerPage = () => {
 		function handleScoreChanged(changedScore: Score) {
 			resetSelection();
 			resetCopiedMeasureId();
-			resetHistory();
-			setScoreHistoryIdx(0);
+			setMusicHistoryIdx(0);
+			setMusicHistory([]);
 			setScore(changedScore);
 			setDiskSaveTime(new Date().getTime());
 			setSaveNotification(false);
 		},
-		[resetSelection, resetCopiedMeasureId, resetHistory, setDiskSaveTime, setSaveNotification],
+		[resetSelection, resetCopiedMeasureId, setDiskSaveTime, setSaveNotification],
 	);
 
 	const handleScoreUpdated = useCallback(
@@ -143,6 +147,12 @@ export const ComposerPage = () => {
 			setScore((s) => {
 				return { ...s } as ScoreModel;
 			});
+			//todo see if deepEqual is actually more efficient than comparing by JSON.stringify (probably not)
+			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
+				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
+				// not length - 1 since setState is async
+				setMusicHistoryIdx(musicHistory.length);
+			}
 			const nowTime = new Date().getTime();
 			const delayMilliseconds = 1000 * 60 * 5;
 			// if we hadn't saved the score for more than 5 mins after last change, flash the save btn
@@ -150,7 +160,7 @@ export const ComposerPage = () => {
 				setSaveNotification(true);
 			}
 		},
-		[diskSaveTime, setSaveNotification],
+		[diskSaveTime, musicHistory, musicHistoryIdx, score, setSaveNotification],
 	);
 
 	const handleScoreSaved = useCallback(
@@ -165,13 +175,13 @@ export const ComposerPage = () => {
 		function handleScoreClosed() {
 			resetSelection();
 			resetCopiedMeasureId();
-			resetHistory();
-			setScoreHistoryIdx(0);
+			setMusicHistoryIdx(0);
+			setMusicHistory([]);
 			setScore(null);
 			setDiskSaveTime(0);
 			setSaveNotification(false);
 		},
-		[resetSelection, resetCopiedMeasureId, resetHistory, setDiskSaveTime, setSaveNotification],
+		[resetSelection, resetCopiedMeasureId, setDiskSaveTime, setSaveNotification],
 	);
 
 	const handleNote = useCallback(
@@ -184,7 +194,7 @@ export const ComposerPage = () => {
 				return;
 			}
 			// if it's the same note, don't do anything
-			if(note.fullName === noteFullName && note.isBoomwhacker === isBoomwhacker) return
+			if (note.fullName === noteFullName && note.isBoomwhacker === isBoomwhacker) return;
 			note.isRest = false;
 			note.fullName = noteFullName;
 			if (isBoomwhacker) note.isBoomwhacker = true;
@@ -211,22 +221,18 @@ export const ComposerPage = () => {
 
 	const handleRedoUndo = useCallback(
 		(val: number) => {
-			// asdfasdfדגכעדגכעדגכע
-			if (scoreHistoryIdx <= 0 || scoreHistoryIdx >= scoreHistory.length) return;
-			setScoreHistoryIdx((prev) => (prev += val));
-			// todo set score as scoreHistory[scoreHistoryIdx]
+			if (musicHistoryIdx + val < 0 || musicHistoryIdx + val > musicHistory.length - 1) return;
+			setMusicHistoryIdx((prev) => (prev += val));
+			resetSelection();
 		},
-		[scoreHistory.length, scoreHistoryIdx],
+		[musicHistory.length, musicHistoryIdx, resetSelection],
 	);
-	console.log('current history:', scoreHistory);
-
-	console.log('current score idx:', scoreHistoryIdx);
 	return (
 		<Box id="ComposerPage" className={classes.root}>
 			<Box className={classes.toolbarContainer}>
 				<ComposerToolbar score={score} onChangeScore={handleScoreChanged} onSaveScore={handleScoreSaved} onCloseScore={handleScoreClosed} />
 			</Box>
-			{score && (
+			{score !== null && (
 				<>
 					<Box className={classes.stageContainer}>
 						<StageUI score={score} onUpdateScore={handleScoreUpdated} onRedoUndo={handleRedoUndo} />
