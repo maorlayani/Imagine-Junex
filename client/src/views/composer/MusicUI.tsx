@@ -409,7 +409,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 															)}
 														</Box>
 													)}
-													{!n.fullName && <Box>{``}</Box>}
+													{/* {!n.fullName && <Box>{``}</Box>} I have no idea what this does */}
 												</Box>
 											))}
 											{/* this are the inner borders between notes within the measure */}

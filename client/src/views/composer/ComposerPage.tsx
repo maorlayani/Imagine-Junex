@@ -110,6 +110,7 @@ export const ComposerPage = () => {
 				return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
 			});
 		}
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [musicHistoryIdx, musicHistory]);
 
@@ -147,7 +148,6 @@ export const ComposerPage = () => {
 			setScore((s) => {
 				return { ...s } as ScoreModel;
 			});
-			//todo see if deepEqual is actually more efficient than comparing by JSON.stringify (probably not)
 			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
 				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
 				// not length - 1 since setState is async
