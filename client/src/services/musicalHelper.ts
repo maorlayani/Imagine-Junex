@@ -152,7 +152,6 @@ export class MusicalHelper {
 				if (!this.deepEqual(value1, value2)) return false;
 			}
 		}
-		// }
 
 		// If we've made it this far, the objects are equal
 		return true;
