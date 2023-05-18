@@ -5,7 +5,7 @@ import { MusicalHelper } from '../../services/musicalHelper';
 
 import { Note } from '../../model/note';
 import { Score } from '../../model/score';
-import { MusicModel, ScoreModel } from '../../model/scoreModel';
+import { ScoreModel } from '../../model/scoreModel';
 
 // components
 import { StageUI } from './StageUI';
@@ -22,6 +22,8 @@ import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import { selectionAtom } from '../../atoms/selectionAtom';
 import { diskSaveTimeAtom } from '../../atoms/diskSaveTimeAtom';
 import { copiedMeasureIdAtom } from '../../atoms/copiedMeasureIdAtom';
+import { musicHistoryIdxAtom } from '../../atoms/musicHistoryIdxAtom';
+import { musicHistoryAtom } from '../../atoms/musicHistoryAtom';
 
 export const ComposerPage = () => {
 	const useStyles = makeStyles(() => ({
@@ -98,9 +100,13 @@ export const ComposerPage = () => {
 	const selection = useRecoilValue(selectionAtom);
 	const resetSelection = useResetRecoilState(selectionAtom);
 	const resetCopiedMeasureId = useResetRecoilState(copiedMeasureIdAtom);
+	const resetMusicHistory = useResetRecoilState(musicHistoryAtom);
+	const resetMusicHistoryIdx = useResetRecoilState(musicHistoryIdxAtom);
 	const [diskSaveTime, setDiskSaveTime] = useRecoilState(diskSaveTimeAtom);
-	const [musicHistory, setMusicHistory] = useState<MusicModel[]>([]);
-	const [musicHistoryIdx, setMusicHistoryIdx] = useState(0);
+	// const [musicHistory, setMusicHistory] = useState<MusicModel[]>([]);
+	// const [musicHistoryIdx, setMusicHistoryIdx] = useState(0);
+	const [musicHistory, setMusicHistory] = useRecoilState(musicHistoryAtom);
+	const [musicHistoryIdx, setMusicHistoryIdx] = useRecoilState(musicHistoryIdxAtom);
 
 	useEffect(() => {
 		if (!score) return;
@@ -134,13 +140,15 @@ export const ComposerPage = () => {
 		function handleScoreChanged(changedScore: Score) {
 			resetSelection();
 			resetCopiedMeasureId();
-			setMusicHistoryIdx(0);
-			setMusicHistory([]);
+			// setMusicHistoryIdx(0);
+			// setMusicHistory([]);
+			resetMusicHistoryIdx();
+			resetMusicHistory();
 			setScore(changedScore);
 			setDiskSaveTime(new Date().getTime());
 			setSaveNotification(false);
 		},
-		[resetSelection, resetCopiedMeasureId, setDiskSaveTime, setSaveNotification],
+		[resetSelection, resetCopiedMeasureId, resetMusicHistoryIdx, resetMusicHistory, setDiskSaveTime, setSaveNotification],
 	);
 
 	const handleScoreUpdated = useCallback(
@@ -160,7 +168,7 @@ export const ComposerPage = () => {
 				setSaveNotification(true);
 			}
 		},
-		[diskSaveTime, musicHistory, musicHistoryIdx, score, setSaveNotification],
+		[diskSaveTime, musicHistory, musicHistoryIdx, score, setMusicHistory, setMusicHistoryIdx, setSaveNotification],
 	);
 
 	const handleScoreSaved = useCallback(
@@ -175,13 +183,15 @@ export const ComposerPage = () => {
 		function handleScoreClosed() {
 			resetSelection();
 			resetCopiedMeasureId();
-			setMusicHistoryIdx(0);
-			setMusicHistory([]);
+			// setMusicHistoryIdx(0);
+			// setMusicHistory([]);
+			resetMusicHistoryIdx();
+			resetMusicHistory();
 			setScore(null);
 			setDiskSaveTime(0);
 			setSaveNotification(false);
 		},
-		[resetSelection, resetCopiedMeasureId, setDiskSaveTime, setSaveNotification],
+		[resetSelection, resetCopiedMeasureId, resetMusicHistoryIdx, resetMusicHistory, setDiskSaveTime, setSaveNotification],
 	);
 
 	const handleNote = useCallback(
@@ -225,7 +235,7 @@ export const ComposerPage = () => {
 			setMusicHistoryIdx((prev) => (prev += val));
 			resetSelection();
 		},
-		[musicHistory.length, musicHistoryIdx, resetSelection],
+		[musicHistory.length, musicHistoryIdx, resetSelection, setMusicHistoryIdx],
 	);
 	return (
 		<Box id="ComposerPage" className={classes.root}>

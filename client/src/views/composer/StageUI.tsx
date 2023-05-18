@@ -1,16 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box';
-import { IconButton, Modal, Typography } from '@material-ui/core';
-import TuneIcon from '@material-ui/icons/Tune';
-import RedoIcon from '@material-ui/icons/Redo';
-import UndoIcon from '@material-ui/icons/Undo';
+import { Modal } from '@material-ui/core';
 import { ScoreModel } from '../../model/scoreModel';
 import { TunePageDialog } from './TunePageDialog';
 import { StageHeaderUI } from './StageHeaderUI';
 import { MusicUI } from './MusicUI';
 import { StageFooterUI } from './StageFooterUI';
 import { AnalyticsHelper, EventCategory } from '../../services/analyticsHelper';
+import ScoreOptions from './ScoreOptions';
 
 export interface StageUIProps {
 	score: ScoreModel;
@@ -88,7 +86,7 @@ export const StageUI = ({ score, onUpdateScore, onRedoUndo }: StageUIProps) => {
 			borderRadius: 0,
 			borderTopLeftRadius: 4,
 			borderBottomLeftRadius: 4,
-			'&.disabled':{
+			'&.disabled': {
 				borderInlineEnd: '6px solid black',
 			},
 			'& svg': {
@@ -101,7 +99,7 @@ export const StageUI = ({ score, onUpdateScore, onRedoUndo }: StageUIProps) => {
 			borderRadius: 0,
 			borderTopRightRadius: 4,
 			borderBottomRightRadius: 4,
-			'&.disabled':{
+			'&.disabled': {
 				borderInlineStart: '6px solid black',
 			},
 			'& svg': {
@@ -148,11 +146,11 @@ export const StageUI = ({ score, onUpdateScore, onRedoUndo }: StageUIProps) => {
 			{score && (
 				<Box id="StageUI" className={`${classes.root} no-scrollbar`} style={{ width: `${pageWidth}px`, padding: `${(pageWidth - stageWidth) / 2}px` }}>
 					<Box className={classes.content} style={{ width: `${stageWidth}px` }}>
-						<Box className={classes.scoreOptions}>
+						<ScoreOptions onClickTune={handleClickTune} onRedoUndo={onRedoUndo} pageWidth={pageWidth} stageWidth={stageWidth} />
+						{/* <Box className={classes.scoreOptions}>
 							<IconButton onClick={handleClickTune} className={`${classes.scoreOptionButton} ${classes.tuneBtn}`} disabled={!score}>
 								<TuneIcon titleAccess="Tune Page" />
 							</IconButton>
-							{/* todo: move this panel to a separate component */}
 							<Box className={classes.undoRedoPanel}>
 								<IconButton onClick={() => onRedoUndo(-1)} className={`${classes.scoreOptionButton} ${classes.undoBtn}`} disabled={!score}>
 									<UndoIcon titleAccess="Undo" />
@@ -162,7 +160,7 @@ export const StageUI = ({ score, onUpdateScore, onRedoUndo }: StageUIProps) => {
 									<RedoIcon titleAccess="Redo" />
 								</IconButton>
 							</Box>
-						</Box>
+						</Box> */}
 						<Modal open={tuneStageDialogVisible} onClose={handleCloseTuneStageDialog}>
 							<TunePageDialog score={score} onUpdateScore={handleScoreUpdated} onDoneTuneStageDialog={handleDoneTuneStageDialog} />
 						</Modal>
