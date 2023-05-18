@@ -110,12 +110,9 @@ export const ComposerPage = () => {
 
 	useEffect(() => {
 		if (!score) return;
-		if (!musicHistory.length) setMusicHistory([score.music]);
-		else {
-			setScore((prev) => {
-				return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
-			});
-		}
+		setScore((prev) => {
+			return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
+		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [musicHistoryIdx, musicHistory]);
@@ -141,14 +138,14 @@ export const ComposerPage = () => {
 			resetSelection();
 			resetCopiedMeasureId();
 			// setMusicHistoryIdx(0);
-			// setMusicHistory([]);
+			// resetMusicHistory();
+			setMusicHistory([changedScore.music]);
 			resetMusicHistoryIdx();
-			resetMusicHistory();
 			setScore(changedScore);
 			setDiskSaveTime(new Date().getTime());
 			setSaveNotification(false);
 		},
-		[resetSelection, resetCopiedMeasureId, resetMusicHistoryIdx, resetMusicHistory, setDiskSaveTime, setSaveNotification],
+		[resetSelection, resetCopiedMeasureId, setMusicHistory, resetMusicHistoryIdx, setDiskSaveTime, setSaveNotification],
 	);
 
 	const handleScoreUpdated = useCallback(
@@ -158,7 +155,6 @@ export const ComposerPage = () => {
 			});
 			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
 				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
-				// not length - 1 since setState is async
 				setMusicHistoryIdx(musicHistory.length);
 			}
 			const nowTime = new Date().getTime();

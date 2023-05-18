@@ -30,9 +30,9 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			cursor: 'pointer',
 			transition: 'all 0.2s ease-in-out',
 			color: '#333',
-			'&.disabled': {
+			'&:disabled': {
 				pointerEvents: 'none',
-				color: '#444',
+				backgroundColor: '#444',
 			},
 			'@media print': {
 				display: 'none',
@@ -55,7 +55,7 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			borderRadius: 0,
 			borderTopLeftRadius: 4,
 			borderBottomLeftRadius: 4,
-			'&.disabled': {
+			'&:disabled': {
 				borderInlineEnd: '6px solid black',
 			},
 			'& svg': {
@@ -68,7 +68,7 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			borderRadius: 0,
 			borderTopRightRadius: 4,
 			borderBottomRightRadius: 4,
-			'&.disabled': {
+			'&:disabled': {
 				borderInlineStart: '6px solid black',
 			},
 			'& svg': {
@@ -96,9 +96,9 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 					<UndoIcon titleAccess="Undo" />
 				</IconButton>
 				<Typography className={`${classes.history}`}>
-					{musicHistoryIdx}/{musicHistoryLength}
+					{musicHistoryIdx + 1}/{musicHistoryLength}
 				</Typography>
-				<IconButton onClick={() => onRedoUndo(1)} className={`${classes.scoreOptionButton} ${classes.redoBtn}`} disabled={musicHistoryIdx >= musicHistoryLength}>
+				<IconButton onClick={() => onRedoUndo(1)} className={`${classes.scoreOptionButton} ${classes.redoBtn}`} disabled={musicHistoryIdx + 1 >= musicHistoryLength}>
 					<RedoIcon titleAccess="Redo" />
 				</IconButton>
 			</Box>
