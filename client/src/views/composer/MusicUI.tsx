@@ -4,7 +4,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box';
 import { TextField, Typography } from '@material-ui/core';
 import { MusicalHelper } from '../../services/musicalHelper';
-import { MusicModel, PartType } from '../../model/scoreModel';
+import { MusicModel, NoteModel, PartModel, PartType } from '../../model/scoreModel';
 import { ScoreSettings } from '../../model/scoreSettings';
 import { Music } from '../../model/music';
 import { selectionAtom } from '../../atoms/selectionAtom';
@@ -16,7 +16,12 @@ export interface MusicUIProps {
 	music: MusicModel;
 	scoreSettings: ScoreSettings;
 }
-
+export enum keyboardArrows {
+	'ArrowRight' = 'ArrowRight',
+	'ArrowLeft' = 'ArrowLeft',
+	'ArrowUp' = 'ArrowUp',
+	'ArrowDown' = 'ArrowDown'
+}
 export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	const useStyles = makeStyles(() => ({
 		root: {
@@ -183,33 +188,11 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 	}));
 	const classes = useStyles();
-	// const [noteIdState, setNoteIdState] = useState(music.measures[0].parts[0].notes[0].id)
 	const [selection, setSelection] = useRecoilState(selectionAtom);
-	// useEffect(() => {
-	// 	console.log('from USE EFFECT', selection);
 
-	// 	const firstMeasure = music.measures[0]
-	// 	setNoteIdState(firstMeasure.parts[0].notes[0].id)
-	// 	if (selection.length < 1) {
-	// 		setSelection([{
-	// 			partInfoId: firstMeasure.parts[0].partInfoId,
-	// 			measureId: firstMeasure.id,
-	// 			partId: firstMeasure.parts[0].id,
-	// 			noteId: firstMeasure.parts[0].notes[0].id
-	// 		}])
-	// 	}
-	// }, [selection])
 	useEffect(() => {
-		console.log('selection', selection);
-		console.log('music', music);
-
-
-	}, [selection])
-	useEffect(() => {
-		// console.log(music);
-		// console.log('from USE EFFECT', selection);
-		document.addEventListener("keyup", handleKeywordEvent)
-		return () => document.removeEventListener("keyup", handleKeywordEvent)
+		document.addEventListener("keydown", handleKeywordEvent)
+		return () => document.removeEventListener("keydown", handleKeywordEvent)
 	})
 
 	const sizeVars = useMemo(() => {
@@ -219,7 +202,6 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		const measureWidth = partWidth + 2;
 		const spaceForMeasurementNumbers = 20;
 		const numberOfMeasuresPerRow = Math.trunc((scoreSettings.musicWidth - spaceForMeasurementNumbers) / measureWidth);
-		console.log(numberOfMeasuresPerRow);
 		const leftGutter = (scoreSettings.musicWidth - measureWidth * numberOfMeasuresPerRow) / 2;
 		const isQuarters = music.measures[0].timeSignature[2] === '4' ? true : false;
 		return {
@@ -268,117 +250,92 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		[music],
 	);
 	const handleKeywordEvent = (e: KeyboardEvent) => {
-		console.log(e);
-		// console.log('measures', music);
-		// console.log('Selection', selection);
-		// console.log(noteIdState);
-		// const NOTEID = selection.length === 0 ? noteIdState : selection[0].noteId
-		if (e.code === "ArrowRight") {
-			const note = Music.findNote(music, selection[0].noteId);
-			if (note) {
-				const part = Music.findPart(music, note.partId);
-				// console.log('noteId', note.id);
-				if (part) {
-					// console.log('part', part.notes);
-
-					const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
-					if (currNoteIdx + 1 <= part.notes.length - 1) {
-						// console.log('currNoteIdx', currNoteIdx);
-						// console.log('part.notes.length', part.notes.length);
-
-						const newNote = part.notes[currNoteIdx + 1]
-						setSelection([{ partInfoId: part.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-					}
-					else if (currNoteIdx + 1 > part.notes.length - 1) {
-						// 	// console.log('currNoteIdx', currNoteIdx);
-						// 	// console.log('part.notes.length', part.notes.length);
-						const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
-						if (currMeasureIdx < music.measures.length - 1) {
-							const newMeasure = music.measures[currMeasureIdx + 1]
-							const newPart = newMeasure.parts[0]
-							const newNote = newPart.notes[0]
-							setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-
-						}
-					}
+		if (Object.values<string>(keyboardArrows).includes(e.code)) {
+			const currMeasureIdx = Music.findMeasureIdx(music, selection[0].measureId)
+			const part = Music.findPart(music, selection[0].partId);
+			if (part) {
+				let newNote: NoteModel
+				const currNoteIdx = Music.findNoteIndex(part, selection[0].noteId)
+				switch (e.code) {
+					case "ArrowRight":
+						handleArrowRight(currMeasureIdx, part, currNoteIdx)
+						break;
+					case "ArrowLeft":
+						handleArrowLeft(currMeasureIdx, part, currNoteIdx)
+						break;
+					case "ArrowUp":
+						handleArrowUp(currMeasureIdx, part, currNoteIdx)
+						break;
+					case "ArrowDown":
+						handleArrowDown(currMeasureIdx, part, currNoteIdx)
+						break;
+					default:
+						break;
 				}
 			}
-		}
-		else if (e.code === "ArrowLeft") {
-			// 	console.log('****left****');
-
-			const note = Music.findNote(music, selection[0].noteId);
-			if (note) {
-				const part = Music.findPart(music, note.partId);
-				// 		console.log('part', part);
-				if (part) {
-					const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
-					if (currNoteIdx - 1 >= 0) {
-						const newNote = part.notes[currNoteIdx - 1]
-						setSelection([{ partInfoId: part.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-					}
-					else if (currNoteIdx - 1 < 0) {
-						const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
-						if (currMeasureIdx > 0) {
-							const newMeasure = music.measures[currMeasureIdx - 1]
-							const newPart = newMeasure.parts[newMeasure.parts.length - 1]
-							const newNote = newPart.notes[newPart.notes.length - 1]
-							setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-						}
-					}
-					// 		}
-				}
-			}
-		}
-		else if (e.code === "ArrowUp") {
-			const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
-			const newMeasure = music.measures[currMeasureIdx - sizeVars.numberOfMeasuresPerRow]
-			if (newMeasure) {
-				const note = Music.findNote(music, selection[0].noteId);
-				if (note) {
-					const part = Music.findPart(music, note.partId);
-					if (part) {
-						const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
-						const newNote = newMeasure.parts[0].notes[currNoteIdx]
-						setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-
-					}
-				}
-			}
-		}
-		else if (e.code === "ArrowDown") {
-			const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
-			const newMeasure = music.measures[currMeasureIdx + sizeVars.numberOfMeasuresPerRow]
-			if (newMeasure) {
-				console.log('down');
-				const note = Music.findNote(music, selection[0].noteId);
-				if (note) {
-					const part = Music.findPart(music, note.partId);
-					if (part) {
-						const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
-						const newNote = newMeasure.parts[0].notes[currNoteIdx]
-						setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-					}
-				}
-			}
-			else {
-				if (sizeVars.numberOfMeasuresPerRow % 2 !== 0) {
-
-					const lastMeasure = music.measures[music.measures.length - 1]
-					const lastPart = lastMeasure.parts[lastMeasure.parts.length - 1]
-					setSelection([{ partInfoId: lastPart.partInfoId, measureId: lastMeasure.id, partId: lastPart.id, noteId: lastPart.notes[lastPart.notes.length - 1].id }])
-				}
-
-			}
-
+		} else {
+			// add here switch case for other keyboard support
 		}
 	}
-
-
+	const handleArrowRight = (measureIdx: number, part: PartModel, noteIdx: number) => {
+		let newNote: NoteModel
+		// is the next step inside the current part
+		if (noteIdx + 1 <= part.notes.length - 1) {
+			newNote = part.notes[noteIdx + 1]
+			setSelection([{ partInfoId: part.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+		}
+		// is the next step outside the current part
+		else if (noteIdx + 1 > part.notes.length - 1) {
+			// is the next step out of bounds
+			if (measureIdx < music.measures.length - 1) {
+				const newMeasure = music.measures[measureIdx + 1]
+				const newPart = newMeasure.parts[0]
+				newNote = newPart.notes[0]
+				setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+			}
+		}
+	}
+	const handleArrowLeft = (measureIdx: number, part: PartModel, noteIdx: number) => {
+		let newNote: NoteModel
+		// is the next step inside the current part
+		if (noteIdx - 1 >= 0) {
+			newNote = part.notes[noteIdx - 1]
+			setSelection([{ partInfoId: part.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+		}
+		// is the next step outside the current part
+		else if (noteIdx - 1 < 0) {
+			// is the next step out of bounds
+			if (measureIdx > 0) {
+				const newMeasure = music.measures[measureIdx - 1]
+				const newPart = newMeasure.parts[newMeasure.parts.length - 1]
+				newNote = newPart.notes[newPart.notes.length - 1]
+				setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+			}
+		}
+	}
+	const handleArrowUp = (measureIdx: number, part: PartModel, noteIdx: number) => {
+		const newMeasure = music.measures[measureIdx - sizeVars.numberOfMeasuresPerRow]
+		// is the next step out of bounds
+		if (newMeasure) {
+			const newNote = newMeasure.parts[0].notes[noteIdx]
+			setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+		}
+	}
+	const handleArrowDown = (measureIdx: number, part: PartModel, noteIdx: number) => {
+		const newMeasure = music.measures[measureIdx + sizeVars.numberOfMeasuresPerRow]
+		if (newMeasure) {
+			const newNote = newMeasure.parts[0].notes[noteIdx]
+			setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+		}
+		// go to the last note when there is no measure below your current position
+		else if (sizeVars.numberOfMeasuresPerRow % 2 !== 0 && measureIdx < (music.measures.length - 1) / 2) {
+			const lastMeasure = music.measures[music.measures.length - 1]
+			const lastPart = lastMeasure.parts[lastMeasure.parts.length - 1]
+			setSelection([{ partInfoId: lastPart.partInfoId, measureId: lastMeasure.id, partId: lastPart.id, noteId: lastPart.notes[lastPart.notes.length - 1].id }])
+		}
+	}
 	const handleClickNote = useCallback(
 		function handleClickNote(e) {
-
-
 			const note = Music.findNote(music, e.currentTarget.dataset.noteId);
 			if (note) {
 				const part = Music.findPart(music, note.partId);
@@ -390,10 +347,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 					SoundHelper.playShortNote(note.fullName);
 				}
 			}
-			// console.log('Selection', selection);
-			console.log('event', e.currentTarget.dataset.noteId);
 		},
-
 		[music, setSelection],
 	);
 
