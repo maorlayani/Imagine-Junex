@@ -330,7 +330,48 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 				}
 			}
 		}
+		else if (e.code === "ArrowUp") {
+			const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
+			const newMeasure = music.measures[currMeasureIdx - sizeVars.numberOfMeasuresPerRow]
+			if (newMeasure) {
+				const note = Music.findNote(music, selection[0].noteId);
+				if (note) {
+					const part = Music.findPart(music, note.partId);
+					if (part) {
+						const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
+						const newNote = newMeasure.parts[0].notes[currNoteIdx]
+						setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
 
+					}
+				}
+			}
+		}
+		else if (e.code === "ArrowDown") {
+			const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
+			const newMeasure = music.measures[currMeasureIdx + sizeVars.numberOfMeasuresPerRow]
+			if (newMeasure) {
+				console.log('down');
+				const note = Music.findNote(music, selection[0].noteId);
+				if (note) {
+					const part = Music.findPart(music, note.partId);
+					if (part) {
+						const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
+						const newNote = newMeasure.parts[0].notes[currNoteIdx]
+						setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+					}
+				}
+			}
+			else {
+				if (sizeVars.numberOfMeasuresPerRow % 2 !== 0) {
+
+					const lastMeasure = music.measures[music.measures.length - 1]
+					const lastPart = lastMeasure.parts[lastMeasure.parts.length - 1]
+					setSelection([{ partInfoId: lastPart.partInfoId, measureId: lastMeasure.id, partId: lastPart.id, noteId: lastPart.notes[lastPart.notes.length - 1].id }])
+				}
+
+			}
+
+		}
 	}
 
 
