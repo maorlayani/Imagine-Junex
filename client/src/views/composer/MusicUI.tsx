@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box';
@@ -183,8 +183,34 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 	}));
 	const classes = useStyles();
-
+	// const [noteIdState, setNoteIdState] = useState(music.measures[0].parts[0].notes[0].id)
 	const [selection, setSelection] = useRecoilState(selectionAtom);
+	// useEffect(() => {
+	// 	console.log('from USE EFFECT', selection);
+
+	// 	const firstMeasure = music.measures[0]
+	// 	setNoteIdState(firstMeasure.parts[0].notes[0].id)
+	// 	if (selection.length < 1) {
+	// 		setSelection([{
+	// 			partInfoId: firstMeasure.parts[0].partInfoId,
+	// 			measureId: firstMeasure.id,
+	// 			partId: firstMeasure.parts[0].id,
+	// 			noteId: firstMeasure.parts[0].notes[0].id
+	// 		}])
+	// 	}
+	// }, [selection])
+	useEffect(() => {
+		console.log('selection', selection);
+		console.log('music', music);
+
+
+	}, [selection])
+	useEffect(() => {
+		// console.log(music);
+		// console.log('from USE EFFECT', selection);
+		document.addEventListener("keyup", handleKeywordEvent)
+		return () => document.removeEventListener("keyup", handleKeywordEvent)
+	})
 
 	const sizeVars = useMemo(() => {
 		const exampleMeasure = Music.getExampleMeasure(music);
@@ -193,6 +219,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		const measureWidth = partWidth + 2;
 		const spaceForMeasurementNumbers = 20;
 		const numberOfMeasuresPerRow = Math.trunc((scoreSettings.musicWidth - spaceForMeasurementNumbers) / measureWidth);
+		console.log(numberOfMeasuresPerRow);
 		const leftGutter = (scoreSettings.musicWidth - measureWidth * numberOfMeasuresPerRow) / 2;
 		const isQuarters = music.measures[0].timeSignature[2] === '4' ? true : false;
 		return {
@@ -240,9 +267,77 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 		[music],
 	);
+	const handleKeywordEvent = (e: KeyboardEvent) => {
+		console.log(e);
+		// console.log('measures', music);
+		// console.log('Selection', selection);
+		// console.log(noteIdState);
+		// const NOTEID = selection.length === 0 ? noteIdState : selection[0].noteId
+		if (e.code === "ArrowRight") {
+			const note = Music.findNote(music, selection[0].noteId);
+			if (note) {
+				const part = Music.findPart(music, note.partId);
+				// console.log('noteId', note.id);
+				if (part) {
+					// console.log('part', part.notes);
+
+					const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
+					if (currNoteIdx + 1 <= part.notes.length - 1) {
+						// console.log('currNoteIdx', currNoteIdx);
+						// console.log('part.notes.length', part.notes.length);
+
+						const newNote = part.notes[currNoteIdx + 1]
+						setSelection([{ partInfoId: part.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+					}
+					else if (currNoteIdx + 1 > part.notes.length - 1) {
+						// 	// console.log('currNoteIdx', currNoteIdx);
+						// 	// console.log('part.notes.length', part.notes.length);
+						const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
+						if (currMeasureIdx < music.measures.length - 1) {
+							const newMeasure = music.measures[currMeasureIdx + 1]
+							const newPart = newMeasure.parts[0]
+							const newNote = newPart.notes[0]
+							setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+
+						}
+					}
+				}
+			}
+		}
+		else if (e.code === "ArrowLeft") {
+			// 	console.log('****left****');
+
+			const note = Music.findNote(music, selection[0].noteId);
+			if (note) {
+				const part = Music.findPart(music, note.partId);
+				// 		console.log('part', part);
+				if (part) {
+					const currNoteIdx = part.notes.findIndex(n => n.id === selection[0].noteId)
+					if (currNoteIdx - 1 >= 0) {
+						const newNote = part.notes[currNoteIdx - 1]
+						setSelection([{ partInfoId: part.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+					}
+					else if (currNoteIdx - 1 < 0) {
+						const currMeasureIdx = music.measures.findIndex(measure => measure.id === selection[0].measureId)
+						if (currMeasureIdx > 0) {
+							const newMeasure = music.measures[currMeasureIdx - 1]
+							const newPart = newMeasure.parts[newMeasure.parts.length - 1]
+							const newNote = newPart.notes[newPart.notes.length - 1]
+							setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+						}
+					}
+					// 		}
+				}
+			}
+		}
+
+	}
+
 
 	const handleClickNote = useCallback(
 		function handleClickNote(e) {
+
+
 			const note = Music.findNote(music, e.currentTarget.dataset.noteId);
 			if (note) {
 				const part = Music.findPart(music, note.partId);
@@ -254,7 +349,10 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 					SoundHelper.playShortNote(note.fullName);
 				}
 			}
+			// console.log('Selection', selection);
+			console.log('event', e.currentTarget.dataset.noteId);
 		},
+
 		[music, setSelection],
 	);
 
@@ -395,11 +493,10 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																	className={classes.noteName}
 																	style={{
 																		top: `${scoreSettings.quarterSize / 2 - 9}px`,
-																		left: `${
-																			MusicalHelper.parseNote(n.fullName).alter
-																				? scoreSettings.quarterSize / 2 - 9
-																				: scoreSettings.quarterSize / 2 - 5.5
-																		}px`,
+																		left: `${MusicalHelper.parseNote(n.fullName).alter
+																			? scoreSettings.quarterSize / 2 - 9
+																			: scoreSettings.quarterSize / 2 - 5.5
+																			}px`,
 																		fontSize: `${getPartFontSize(p.partInfoId) || 12}px`,
 																	}}
 																>
@@ -419,9 +516,8 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 													className={classes.measureInnerBorders}
 													style={{
 														height: `${scoreSettings.quarterSize}px`,
-														left: `${
-															sizeVars.isQuarters ? scoreSettings.quarterSize * (idx + 1) - 1 : (scoreSettings.quarterSize * (idx + 1) - 1) / 2
-														}px`,
+														left: `${sizeVars.isQuarters ? scoreSettings.quarterSize * (idx + 1) - 1 : (scoreSettings.quarterSize * (idx + 1) - 1) / 2
+															}px`,
 													}}
 												/>
 											))}
@@ -449,7 +545,8 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 						</Box>
 					))}
 				</Box>
-			))}
-		</Box>
+			))
+			}
+		</Box >
 	);
 };
