@@ -6,7 +6,6 @@ import { useRecoilValue } from 'recoil';
 import { musicHistoryIdxAtom } from '../../atoms/musicHistoryIdxAtom';
 import { musicHistoryAtom } from '../../atoms/musicHistoryAtom';
 
-//todo add to cmp: musicHistoryIdx(atom), musicHistory.length(should be atom)
 export type ScoreOptionsProps = {
 	onRedoUndo: (val: number) => void;
 	onClickTune: () => void;
@@ -28,7 +27,7 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			height: '32px !important',
 			textAlign: 'center',
 			cursor: 'pointer',
-			transition: 'all 0.2s ease-in-out',
+			transition: 'all 0.4s ease-in-out',
 			color: '#333',
 			'&:disabled': {
 				pointerEvents: 'none',
@@ -45,6 +44,10 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			padding: 4,
 			borderRadius: 4,
 			boxShadow: '3px 3px 2px rgba(0, 0, 0, 0.2)',
+			transition: '0.4s',
+			'&.hidden': {
+				opacity: 0,
+			},
 		},
 		history: {
 			color: '#ccc',
@@ -91,7 +94,7 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			<IconButton onClick={onClickTune} className={`${classes.scoreOptionButton} ${classes.tuneBtn}`}>
 				<TuneIcon titleAccess="Tune Page" />
 			</IconButton>
-			<Box className={classes.undoRedoPanel}>
+			<Box className={`${classes.undoRedoPanel} ${musicHistoryLength <= 1 ? 'hidden' : ''}`}>
 				<IconButton onClick={() => onRedoUndo(-1)} className={`${classes.scoreOptionButton} ${classes.undoBtn}`} disabled={musicHistoryIdx <= 0}>
 					<UndoIcon titleAccess="Undo" />
 				</IconButton>
