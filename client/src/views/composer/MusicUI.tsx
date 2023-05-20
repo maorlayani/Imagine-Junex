@@ -191,6 +191,8 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	const [selection, setSelection] = useRecoilState(selectionAtom);
 
 	useEffect(() => {
+		console.log('music', music);
+
 		document.addEventListener("keydown", handleKeywordEvent)
 		return () => document.removeEventListener("keydown", handleKeywordEvent)
 	})
@@ -286,8 +288,15 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		}
 		// is the next step outside the current part
 		else if (noteIdx + 1 > part.notes.length - 1) {
-			// is the next step out of bounds
-			if (measureIdx < music.measures.length - 1) {
+			const currentMeasure = music.measures[measureIdx]
+			const partIdx = Music.findPartIdx(currentMeasure, part.id)
+			// is the current step inside the current measure
+			if (partIdx < currentMeasure.parts.length - 1) {
+				const newPart = currentMeasure.parts[partIdx + 1]
+				setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[0].id }])
+			}
+			// is the next step outside the current measure
+			else if (measureIdx < music.measures.length - 1) {
 				const newMeasure = music.measures[measureIdx + 1]
 				const newPart = newMeasure.parts[0]
 				newNote = newPart.notes[0]
@@ -304,8 +313,15 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		}
 		// is the next step outside the current part
 		else if (noteIdx - 1 < 0) {
-			// is the next step out of bounds
-			if (measureIdx > 0) {
+			const currentMeasure = music.measures[measureIdx]
+			const partIdx = Music.findPartIdx(currentMeasure, part.id)
+			// is the current step inside the current measure
+			if (partIdx - 1 >= 0) {
+				const newPart = currentMeasure.parts[partIdx - 1]
+				setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[newPart.notes.length - 1].id }])
+			}
+			// is the next step outside the current measure
+			else if (measureIdx > 0) {
 				const newMeasure = music.measures[measureIdx - 1]
 				const newPart = newMeasure.parts[newMeasure.parts.length - 1]
 				newNote = newPart.notes[newPart.notes.length - 1]
@@ -314,24 +330,39 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		}
 	}
 	const handleArrowUp = (measureIdx: number, part: PartModel, noteIdx: number) => {
-		const newMeasure = music.measures[measureIdx - sizeVars.numberOfMeasuresPerRow]
-		// is the next step out of bounds
-		if (newMeasure) {
-			const newNote = newMeasure.parts[0].notes[noteIdx]
-			setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+		const currentMeasure = music.measures[measureIdx]
+		const partIdx = Music.findPartIdx(currentMeasure, part.id)
+		if (partIdx > 0) {
+			const newPart = currentMeasure.parts[partIdx - 1]
+			setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[noteIdx].id }])
+		} else {
+			const newMeasure = music.measures[measureIdx - sizeVars.numberOfMeasuresPerRow]
+			// is the next step out of bounds
+			if (newMeasure) {
+				const newNote = newMeasure.parts[newMeasure.parts.length - 1].notes[noteIdx]
+				setSelection([{ partInfoId: newMeasure.parts[newMeasure.parts.length - 1].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+			}
 		}
+
 	}
 	const handleArrowDown = (measureIdx: number, part: PartModel, noteIdx: number) => {
-		const newMeasure = music.measures[measureIdx + sizeVars.numberOfMeasuresPerRow]
-		if (newMeasure) {
-			const newNote = newMeasure.parts[0].notes[noteIdx]
-			setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
-		}
-		// go to the last note when there is no measure below your current position
-		else if (sizeVars.numberOfMeasuresPerRow % 2 !== 0 && measureIdx < (music.measures.length - 1) / 2) {
-			const lastMeasure = music.measures[music.measures.length - 1]
-			const lastPart = lastMeasure.parts[lastMeasure.parts.length - 1]
-			setSelection([{ partInfoId: lastPart.partInfoId, measureId: lastMeasure.id, partId: lastPart.id, noteId: lastPart.notes[lastPart.notes.length - 1].id }])
+		const currentMeasure = music.measures[measureIdx]
+		const partIdx = Music.findPartIdx(currentMeasure, part.id)
+		if (partIdx < currentMeasure.parts.length - 1) {
+			const newPart = currentMeasure.parts[partIdx + 1]
+			setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[noteIdx].id }])
+		} else {
+			const newMeasure = music.measures[measureIdx + sizeVars.numberOfMeasuresPerRow]
+			if (newMeasure) {
+				const newNote = newMeasure.parts[0].notes[noteIdx]
+				setSelection([{ partInfoId: newMeasure.parts[0].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+			}
+			// go to the last note when there is no measure below your current position
+			else if (sizeVars.numberOfMeasuresPerRow % 2 !== 0 && measureIdx < (music.measures.length - 1) / 2) {
+				const lastMeasure = music.measures[music.measures.length - 1]
+				const lastPart = lastMeasure.parts[lastMeasure.parts.length - 1]
+				setSelection([{ partInfoId: lastPart.partInfoId, measureId: lastMeasure.id, partId: lastPart.id, noteId: lastPart.notes[lastPart.notes.length - 1].id }])
+			}
 		}
 	}
 	const handleClickNote = useCallback(

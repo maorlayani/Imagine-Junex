@@ -68,7 +68,11 @@ export class Music implements MusicModel {
 		});
 		return result;
 	}
-
+	static findPartIdx(measure: MeasureModel, partId: string): number {
+		let result: number
+		result = measure.parts.findIndex(p => p.id === partId)
+		return result
+	}
 	static findNote(u: MusicModel, noteId: string): NoteModel | null {
 		let result: NoteModel | null = null;
 		u.measures.forEach((m) => {
