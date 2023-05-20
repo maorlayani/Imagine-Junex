@@ -332,12 +332,13 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	const handleArrowUp = (measureIdx: number, part: PartModel, noteIdx: number) => {
 		const currentMeasure = music.measures[measureIdx]
 		const partIdx = Music.findPartIdx(currentMeasure, part.id)
+		// is the next step outside the current part
 		if (partIdx > 0) {
 			const newPart = currentMeasure.parts[partIdx - 1]
 			setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[noteIdx].id }])
+			// is the next step outside the current measure
 		} else {
 			const newMeasure = music.measures[measureIdx - sizeVars.numberOfMeasuresPerRow]
-			// is the next step out of bounds
 			if (newMeasure) {
 				const newNote = newMeasure.parts[newMeasure.parts.length - 1].notes[noteIdx]
 				setSelection([{ partInfoId: newMeasure.parts[newMeasure.parts.length - 1].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
@@ -348,9 +349,11 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	const handleArrowDown = (measureIdx: number, part: PartModel, noteIdx: number) => {
 		const currentMeasure = music.measures[measureIdx]
 		const partIdx = Music.findPartIdx(currentMeasure, part.id)
+		// is the next step outside the current part
 		if (partIdx < currentMeasure.parts.length - 1) {
 			const newPart = currentMeasure.parts[partIdx + 1]
 			setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[noteIdx].id }])
+			// is the next step outside the current measure
 		} else {
 			const newMeasure = music.measures[measureIdx + sizeVars.numberOfMeasuresPerRow]
 			if (newMeasure) {
