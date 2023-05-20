@@ -193,8 +193,8 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	useEffect(() => {
 		console.log('music', music);
 
-		document.addEventListener("keydown", handleKeywordEvent)
-		return () => document.removeEventListener("keydown", handleKeywordEvent)
+		document.addEventListener("keydown", handleKeyboardEvent)
+		return () => document.removeEventListener("keydown", handleKeyboardEvent)
 	})
 
 	const sizeVars = useMemo(() => {
@@ -251,32 +251,34 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		},
 		[music],
 	);
-	const handleKeywordEvent = (e: KeyboardEvent) => {
-		if (Object.values<string>(keyboardArrows).includes(e.code)) {
-			const currMeasureIdx = Music.findMeasureIdx(music, selection[0].measureId)
-			const part = Music.findPart(music, selection[0].partId);
-			if (part) {
-				let newNote: NoteModel
-				const currNoteIdx = Music.findNoteIndex(part, selection[0].noteId)
-				switch (e.code) {
-					case "ArrowRight":
-						handleArrowRight(currMeasureIdx, part, currNoteIdx)
-						break;
-					case "ArrowLeft":
-						handleArrowLeft(currMeasureIdx, part, currNoteIdx)
-						break;
-					case "ArrowUp":
-						handleArrowUp(currMeasureIdx, part, currNoteIdx)
-						break;
-					case "ArrowDown":
-						handleArrowDown(currMeasureIdx, part, currNoteIdx)
-						break;
-					default:
-						break;
-				}
+	const handleKeyboardEvent = (e: KeyboardEvent) => {
+		if (Object.values<string>(keyboardArrows).includes(e.code)) handleArrowKeyboard(e.code)
+
+		// add here switch case for other keyboard support
+
+	}
+	const handleArrowKeyboard = (key: string) => {
+		const currMeasureIdx = Music.findMeasureIdx(music, selection[0].measureId)
+		const part = Music.findPart(music, selection[0].partId);
+		if (part) {
+			let newNote: NoteModel
+			const currNoteIdx = Music.findNoteIndex(part, selection[0].noteId)
+			switch (key) {
+				case "ArrowRight":
+					handleArrowRight(currMeasureIdx, part, currNoteIdx)
+					break;
+				case "ArrowLeft":
+					handleArrowLeft(currMeasureIdx, part, currNoteIdx)
+					break;
+				case "ArrowUp":
+					handleArrowUp(currMeasureIdx, part, currNoteIdx)
+					break;
+				case "ArrowDown":
+					handleArrowDown(currMeasureIdx, part, currNoteIdx)
+					break;
+				default:
+					break;
 			}
-		} else {
-			// add here switch case for other keyboard support
 		}
 	}
 	const handleArrowRight = (measureIdx: number, part: PartModel, noteIdx: number) => {
