@@ -111,7 +111,7 @@ export const ComposerPage = () => {
 	useEffect(() => {
 		if (!score) return;
 		setScore((prev) => {
-			return { ...prev, music: structuredClone(musicHistory[musicHistoryIdx]) } as ScoreModel;
+			return { ...prev, music: JSON.parse(JSON.stringify(musicHistory[musicHistoryIdx])) } as ScoreModel;
 		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -154,7 +154,7 @@ export const ComposerPage = () => {
 				return { ...s } as ScoreModel;
 			});
 			if (score && !MusicalHelper.deepEqual(musicHistory[musicHistoryIdx], score.music)) {
-				setMusicHistory((prev) => [...prev, structuredClone(score.music)]);
+				setMusicHistory((prev) => [...prev, JSON.parse(JSON.stringify(score.music))]);
 				setMusicHistoryIdx(musicHistory.length);
 			}
 			const nowTime = new Date().getTime();
