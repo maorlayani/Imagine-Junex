@@ -342,7 +342,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																		`${MusicalHelper.parseNote(n.fullName).step}${MusicalHelper.parseNote(n.fullName).octave}`,
 																		scoreSettings.quarterSize - 2,
 																		'px',
-																		n,
+																		{ isBoomwhacker: n.isBoomwhacker, isTiedToPrev: n.isTiedToPrev },
 																	),
 																}}
 															/>

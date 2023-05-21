@@ -2,19 +2,27 @@ import { NoteModel } from '../model/scoreModel';
 import { MusicalHelper } from './musicalHelper';
 export enum FnOctaveShape {
 	'X' = 'X',
+	'X_MINI' = 'X_MINI',
 	'SQUARE' = 'SQUARE',
+	'SQUARE_MINI' = 'SQUARE_MINI', // mini shapes are the small ones displaying on the piano panel
 	'CIRCLE' = 'CIRCLE',
+	'CIRCLE_MINI' = 'CIRCLE_MINI',
 	'TRIANGLE' = 'TRIANGLE',
+	'TRIANGLE_MINI' = 'TRIANGLE_MINI',
 	'RHOMBUS' = 'RHOMBUS',
+	'RHOMBUS_MINI' = 'RHOMBUS_MINI',
 	'NA' = 'NA',
 	'BW_SP' = 'BW_SP', //a special case for the octave note on the Boomwhacker
 }
 
 export class FigurenotesHelper {
-	static getOctaveShape(octaveNumber: number, isBoomwhacker: boolean | undefined): FnOctaveShape {
-		if (isBoomwhacker && octaveNumber === 5) return FnOctaveShape.BW_SP;
+	static getOctaveShape(octaveNumber: number, options?: { isBoomwhacker?: boolean; isMini?: boolean }): FnOctaveShape {
+		if (options?.isBoomwhacker && octaveNumber === 5) return FnOctaveShape.BW_SP;
 		if (octaveNumber >= 0 && octaveNumber <= 6) {
-			return [FnOctaveShape.NA, FnOctaveShape.NA, FnOctaveShape.X, FnOctaveShape.SQUARE, FnOctaveShape.CIRCLE, FnOctaveShape.TRIANGLE, FnOctaveShape.RHOMBUS][octaveNumber];
+			const res =
+				[FnOctaveShape.NA, FnOctaveShape.NA, FnOctaveShape.X, FnOctaveShape.SQUARE, FnOctaveShape.CIRCLE, FnOctaveShape.TRIANGLE, FnOctaveShape.RHOMBUS][octaveNumber] +
+				(options?.isMini ? '_MINI' : '');
+			return res as FnOctaveShape;
 		} else {
 			return FnOctaveShape.NA;
 		}
@@ -59,25 +67,26 @@ export class FigurenotesHelper {
 	static getBlackIndices(): number[] {
 		return [1, 3, 6, 8, 10];
 	}
-	static getSymbolStyle(noteFullName: string, size: number, units: string, note?: NoteModel) {
+	static getSymbolStyle(noteFullName: string, size: number, units: string, options?: { isBoomwhacker?: boolean; isMini?: boolean; isTiedToPrev?: boolean }) {
 		let style: any;
 		const noteDetails = MusicalHelper.parseNote(noteFullName);
-		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, note?.isBoomwhacker);
-		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, note?.isBoomwhacker);
-		if (note?.isTiedToPrev) {
-			style = {
-				// top: `${size / 2}${units}`,
-				// left: `${-size / 2}${units}`,
-				// width: `${size + 3}${units}`,
-				// height: `${size / 2}${units}`,
-				// borderStyle: 'solid',
-				// borderColor: 'black',
-				// borderWidth: '1.5px 1.5px 1.5px 0',
-				// backgroundColor: `${noteColor}`,
-				// zIndex: -1,
-			};
-			return style;
-		}
+		const octaveShape = FigurenotesHelper.getOctaveShape(noteDetails.octave, { isBoomwhacker: options?.isBoomwhacker, isMini: options?.isMini });
+		const noteColor = FigurenotesHelper.getNoteColor(noteDetails.step, options?.isBoomwhacker);
+		if (options?.isTiedToPrev) return {};
+		//  {
+		// 	style = {
+		// 		top: `${size / 2}${units}`,
+		// 		left: `${-size / 2}${units}`,
+		// 		width: `${size + 3}${units}`,
+		// 		height: `${size / 2}${units}`,
+		// 		borderStyle: 'solid',
+		// 		borderColor: 'black',
+		// 		borderWidth: '1.5px 1.5px 1.5px 0',
+		// 		backgroundColor: `${noteColor}`,
+		// 		zIndex: -1,
+		// 	};
+		// 	return style;
+		// }
 		switch (octaveShape) {
 			case FnOctaveShape.X: {
 				style = {
@@ -87,6 +96,15 @@ export class FigurenotesHelper {
 					background: _setBackgroundX(noteColor),
 					// background: `linear-gradient(45deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%), linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%)`,
 					//borderRadius: `10%`,
+				};
+				break;
+			}
+			case FnOctaveShape.X_MINI: {
+				style = {
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					background: `linear-gradient(45deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%), linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, ${noteColor} 35%, ${noteColor} 65%, rgba(0,0,0,0) 65%, rgba(0,0,0,0) 100%)`,
+					borderRadius: `10%`,
 				};
 				break;
 			}
@@ -101,6 +119,15 @@ export class FigurenotesHelper {
 				};
 				break;
 			}
+			case FnOctaveShape.SQUARE_MINI: {
+				style = {
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					backgroundColor: `${noteColor}`,
+					borderRadius: `10%`,
+				};
+				break;
+			}
 			case FnOctaveShape.CIRCLE: {
 				style = {
 					width: `${size}${units}`,
@@ -112,18 +139,32 @@ export class FigurenotesHelper {
 				};
 				break;
 			}
+			case FnOctaveShape.CIRCLE_MINI: {
+				style = {
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					borderRadius: `50%`,
+					backgroundColor: `${noteColor}`,
+				};
+				break;
+			}
 			case FnOctaveShape.TRIANGLE: {
 				style = {
-					// width: `0`,
-					// height: `0`,
-					// borderLeft: `${size / 2}${units} solid transparent`,
-					// borderRight: `${size / 2}${units} solid transparent`,
-					// borderBottom: `${size}${units} solid ${noteColor}`,
-					//borderRadius: `10%`,
 					width: `${size}${units}`,
 					height: `${size}${units}`,
 					background: `linear-gradient(0deg, black 0%, transparent 3%), linear-gradient(116.5deg, white 31%, black 33%, transparent 35%), linear-gradient(-116.5deg, transparent 31%, black 33%, ${noteColor} 34%)`,
 					zIndex: '20',
+				};
+				break;
+			}
+			case FnOctaveShape.TRIANGLE_MINI: {
+				style = {
+					width: `0`,
+					height: `0`,
+					borderLeft: `${size / 2}${units} solid transparent`,
+					borderRight: `${size / 2}${units} solid transparent`,
+					borderBottom: `${size}${units} solid ${noteColor}`,
+					borderRadius: `10%`,
 				};
 				break;
 			}
@@ -137,6 +178,19 @@ export class FigurenotesHelper {
 					border: '1.5px solid',
 					zIndex: '20',
 					//borderRadius: `10%`,
+				};
+				break;
+			}
+			case FnOctaveShape.RHOMBUS_MINI: {
+				style = {
+					width: `${size}${units}`,
+					height: `${size}${units}`,
+					backgroundColor: `${noteColor}`,
+					transform: `rotate(45deg) scale(0.71)`,
+					transformOrigin: `${size / 2}${units} ${size / 2}${units}`,
+					// border: '1.5px solid',
+					zIndex: '20',
+					borderRadius: `10%`,
 				};
 				break;
 			}
