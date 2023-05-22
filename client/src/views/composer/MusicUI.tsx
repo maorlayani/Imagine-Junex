@@ -191,8 +191,6 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 	const [selection, setSelection] = useRecoilState(selectionAtom);
 
 	useEffect(() => {
-		console.log('music', music);
-
 		document.addEventListener("keydown", handleKeyboardEvent)
 		return () => document.removeEventListener("keydown", handleKeyboardEvent)
 	})
@@ -255,7 +253,6 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		if (Object.values<string>(keyboardArrows).includes(e.code)) handleArrowKeyboard(e.code)
 
 		// add here switch case for other keyboard support
-
 	}
 	const handleArrowKeyboard = (key: string) => {
 		const currMeasureIdx = Music.findMeasureIdx(music, selection[0].measureId)
@@ -291,18 +288,32 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		// is the next step outside the current part
 		else if (noteIdx + 1 > part.notes.length - 1) {
 			const currentMeasure = music.measures[measureIdx]
+			const nextMeasure = music.measures[measureIdx + 1]
+			const prevMeasure = music.measures[measureIdx - 1]
 			const partIdx = Music.findPartIdx(currentMeasure, part.id)
-			// is the current step inside the current measure
-			if (partIdx < currentMeasure.parts.length - 1) {
-				const newPart = currentMeasure.parts[partIdx + 1]
+			// step between measures in the same line and in the same part line (same part index)
+			if (partIdx < nextMeasure.parts.length - 1 && (measureIdx + 1) % sizeVars.numberOfMeasuresPerRow !== 0) {
+				const newPart = nextMeasure.parts[partIdx]
 				setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[0].id }])
 			}
-			// is the next step outside the current measure
-			else if (measureIdx < music.measures.length - 1) {
-				const newMeasure = music.measures[measureIdx + 1]
-				const newPart = newMeasure.parts[0]
+			// step between measures in the same line and in the DIFFERENT part line
+			else if (partIdx < currentMeasure.parts.length - 1 && (measureIdx + 1) % sizeVars.numberOfMeasuresPerRow === 0) {
+				const newPart = prevMeasure.parts[partIdx + 1]
 				newNote = newPart.notes[0]
 				setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+			}
+			// step in last part line
+			else if (partIdx === currentMeasure.parts.length - 1) {
+				// step between measures in the DIFFERENT lines 
+				if ((measureIdx + 1) % sizeVars.numberOfMeasuresPerRow === 0) {
+					const newPart = nextMeasure.parts[0]
+					newNote = newPart.notes[0]
+					setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+				} else {
+					// step between measures in same line
+					const newPart = nextMeasure.parts[partIdx]
+					setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[0].id }])
+				}
 			}
 		}
 	}
@@ -316,18 +327,37 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 		// is the next step outside the current part
 		else if (noteIdx - 1 < 0) {
 			const currentMeasure = music.measures[measureIdx]
+			const nextMeasure = music.measures[measureIdx + 1]
+			const prevMeasure = music.measures[measureIdx - 1]
 			const partIdx = Music.findPartIdx(currentMeasure, part.id)
-			// is the current step inside the current measure
-			if (partIdx - 1 >= 0) {
-				const newPart = currentMeasure.parts[partIdx - 1]
-				setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[newPart.notes.length - 1].id }])
+			// step between measures in the same line and in the same part line (same part index)
+			if ((measureIdx + 1) % sizeVars.numberOfMeasuresPerRow !== 0) {
+				if (partIdx > 0) {
+					const newPart = nextMeasure.parts[partIdx - 1]
+					setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[newPart.notes.length - 1].id }])
+				} else {
+					const newPart = prevMeasure.parts[prevMeasure.parts.length - 1]
+					setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[newPart.notes.length - 1].id }])
+				}
 			}
-			// is the next step outside the current measure
-			else if (measureIdx > 0) {
-				const newMeasure = music.measures[measureIdx - 1]
-				const newPart = newMeasure.parts[newMeasure.parts.length - 1]
+			// step between measures in the same line and in the DIFFERENT part line
+			else if (partIdx < currentMeasure.parts.length - 1 && (measureIdx + 1) % sizeVars.numberOfMeasuresPerRow === 0) {
+				const newPart = prevMeasure.parts[partIdx]
 				newNote = newPart.notes[newPart.notes.length - 1]
 				setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+			}
+			// step in last part line
+			else if (partIdx === currentMeasure.parts.length - 1) {
+				// step between measures in the DIFFERENT lines 
+				if ((measureIdx + 1) % sizeVars.numberOfMeasuresPerRow !== 0) {
+					const newPart = nextMeasure.parts[partIdx - 1]
+					newNote = newPart.notes[newPart.notes.length - 1]
+					setSelection([{ partInfoId: newPart.partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
+				} else {
+					// step between measures in same line
+					const newPart = prevMeasure.parts[partIdx]
+					setSelection([{ partInfoId: newPart.partInfoId, measureId: newPart.measureId, partId: newPart.id, noteId: newPart.notes[newPart.notes.length - 1].id }])
+				}
 			}
 		}
 	}
@@ -346,7 +376,6 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 				setSelection([{ partInfoId: newMeasure.parts[newMeasure.parts.length - 1].partInfoId, measureId: newNote.measureId, partId: newNote.partId, noteId: newNote.id }])
 			}
 		}
-
 	}
 	const handleArrowDown = (measureIdx: number, part: PartModel, noteIdx: number) => {
 		const currentMeasure = music.measures[measureIdx]
