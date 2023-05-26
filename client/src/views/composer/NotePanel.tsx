@@ -249,16 +249,16 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 		const { octave, step } = MusicalHelper.parseNote(note?.fullName);
 		const canDelete = note && !note.isRest;
 		const common = canDelete && !note.isBoomwhacker; // just a common boolean check that appears in all options
-		const octaveUp = common && octave < MusicalHelper.maxOctave;
-		const octaveDown = common && octave > MusicalHelper.minOctave;
-		const semiUp = octaveUp && step !== 'B';
-		const semiDown = octaveDown && step !== 'C';
+		const canOctaveUp = common && octave < MusicalHelper.maxOctave;
+		const canOctaveDown = common && octave > MusicalHelper.minOctave;
+		const canSemiUp = canOctaveUp || step !== 'B';
+		const canSemiDown = canOctaveDown || step !== 'C';
 		const noteOptions = {
 			durations,
-			octaveUp,
-			octaveDown,
-			semiUp,
-			semiDown,
+			canOctaveUp,
+			canOctaveDown,
+			canSemiUp,
+			canSemiDown,
 			canDelete,
 		};
 		return noteOptions;
@@ -291,11 +291,11 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 								data-direction="down"
 								data-amount="semitone"
 								className={`${classes.actionButton}`}
-								disabled={!noteOptions.semiDown}
+								disabled={!noteOptions.canSemiDown}
 							>
 								<ArrowDropDownOutlinedIcon titleAccess="Semitone down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="semitone" className={`${classes.actionButton}`} disabled={!noteOptions.semiUp}>
+							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="semitone" className={`${classes.actionButton}`} disabled={!noteOptions.canSemiUp}>
 								<ArrowDropUpOutlinedIcon titleAccess="Semitone up" />
 							</IconButton>
 							<Typography variant="body1" className={`${classes.panelText}`}>
@@ -308,11 +308,11 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 								data-direction="down"
 								data-amount="octave"
 								className={`${classes.actionButton}`}
-								disabled={!noteOptions.octaveDown}
+								disabled={!noteOptions.canOctaveDown}
 							>
 								<ArrowDropDownOutlinedIcon titleAccess="Octave down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="octave" className={`${classes.actionButton}`} disabled={!noteOptions.octaveUp}>
+							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="octave" className={`${classes.actionButton}`} disabled={!noteOptions.canOctaveUp}>
 								<ArrowDropUpOutlinedIcon titleAccess="Octave up" />
 							</IconButton>
 							<Typography variant="body1" className={`${classes.panelText}`}>
