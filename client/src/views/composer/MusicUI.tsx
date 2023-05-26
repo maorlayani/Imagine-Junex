@@ -39,19 +39,19 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			height: 'max-content',
 		},
 		measure: {
-			borderBlock: '2px solid #000',
+			// borderBlock: '2px solid #000',
 			position: 'relative',
-			borderInlineStart: '2px solid #000',
+			// borderInlineStart: '2px solid #000',
 			'&:last-child': {
-				borderInlineEnd: '2px solid #000',
+				// borderInlineEnd: '2px solid #000',
 			},
 		},
 		measureInnerBorders: {
 			position: 'absolute',
 			zIndex: 1,
-			borderInlineEnd: '2px solid rgba(0,0,0,0.6)',
-			'&:last-of-type': {
-				borderInlineEnd: '3px solid black',
+			'&:not(:last-of-type)': {
+				borderInlineEnd: '2px solid rgba(0,0,0,0.6)',
+				// borderInlineEnd: '3px solid black',
 			},
 		},
 		measureNumberAnchor: {
@@ -69,6 +69,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			fontWeight: 700,
 		},
 		melodyPartRoot: {
+			border: '2px solid #000',
 			display: 'flex',
 		},
 		partSpaceAbove: {
@@ -117,6 +118,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			zIndex: -1,
 		},
 		textPartRoot: {
+			border: '1px solid #eee',
 			display: 'flex',
 			width: '100%',
 			'& .MuiTextField-root': {
