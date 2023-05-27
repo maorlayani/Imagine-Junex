@@ -62,10 +62,16 @@ export class Note implements NoteModel {
 		// define the first note of the corresponding part and set it's duration
 		const { beatDurationDivs } = MusicalHelper.parseTimeSignature(measure.timeSignature);
 
-		const tiedNote = new Note(CommonHelper.getRandomId(), nextPart.measureId, nextPart.id, note.fullName, false, 0, beatDurationDivs, false, true, false);
+		// const tiedNote = new Note(CommonHelper.getRandomId(), nextPart.measureId, nextPart.id, note.fullName, false, 0, beatDurationDivs, false, true, false);
 		note.isTiedToNext = true;
-		tiedNote.isTiedToPrev = true;
-		nextPart.notes[0] = tiedNote;
+		// tiedNote.isTiedToPrev = true;
+		// nextPart.notes[0] = tiedNote;
+		nextPart.notes[0] = {
+			...nextPart.notes[0],
+			fullName: note.fullName,
+			isRest: note.isRest,
+			isTiedToPrev: true,
+		};
 		if (tiedDivs !== beatDurationDivs) Part.changeNoteDuration(nextPart, nextPart.notes[0].id, tiedDivs, measure, music, false);
 	}
 }

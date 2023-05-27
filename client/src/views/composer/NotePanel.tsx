@@ -148,21 +148,38 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 
 	const handleClickDelete = useCallback(
 		function handleClickDelete() {
+			if (!score) return;
 			const notes: NoteModel[] = getSelectedNotes(false);
 			if (!notes.length) {
 				return;
 			}
+			debugger
 			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'delete note');
 			notes.forEach((n) => {
-				if (n.isTiedToNext && score) {
+				const m = Music.findMeasure(score.music, n.measureId);
+				if (!m) {
+					return;
+				}
+				const p = Measure.findPart(m, n.partId);
+				if (!p) {
+					return;
+				}
+				// set the note duration to either the default, or it's current length (in the edge case of last note in part that is shorter than normal)
+				const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(m.timeSignature).beatDurationDivs, n.durationDivs);
+				if (n.isTiedToNext) {
 					const nextNote = Note.getTiedNote(n, score, true);
 					n.isTiedToNext = false;
 					nextNote.fullName = '';
 					nextNote.isTiedToPrev = false;
-				} else if (n.isTiedToPrev && score) {
+					const nextMeasure = Music.findMeasure(score.music, nextNote.measureId);
+					const nextPart = Measure.findPart(nextMeasure!, nextNote.partId);
+					const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(nextMeasure!.timeSignature).beatDurationDivs, nextNote.durationDivs);
+					Part.changeNoteDuration(nextPart!, nextNote.id, defaultDuration, nextMeasure!, score.music, false);
+				} else if (n.isTiedToPrev) {
 					Note.getTiedNote(n, score, false).isTiedToPrev = false;
 					n.isTiedToPrev = false;
 				}
+				Part.changeNoteDuration(p, n.id, defaultDuration, m, score.music, false);
 				n.fullName = '';
 				n.isRest = true;
 			});

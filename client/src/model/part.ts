@@ -100,7 +100,6 @@ export class Part implements PartModel {
 			// since number of notes per measure can change (1/2, 3/8 etc.) this index will tell us how many notes will be in the part when we finish parsing
 			let lastOkIndex = -1;
 			let tiedDivs = 0;
-			// let endDiv: number;
 			p.notes[p.notes.length - 1].durationDivs = measure.durationDivs;
 			p.notes.forEach((n, i) => {
 				// set every note to start at the beginning of where the last note ended
@@ -113,7 +112,9 @@ export class Part implements PartModel {
 					n.durationDivs = Math.max(n.durationDivs - (endDiv - measure.durationDivs), 0);
 					if (n.durationDivs > 0) {
 						lastOkIndex = i;
-						if (n.id === selection?.noteId) {
+						//! need to test this if duration changing still works. done 27/05/2023
+						// if (n.id === selection?.noteId) {
+						if (n.id === noteId) {
 							tiedDivs = n.startDiv + newDurationDivs - measure.durationDivs;
 						}
 					}
