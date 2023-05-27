@@ -154,8 +154,15 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 			}
 			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'delete note');
 			notes.forEach((n) => {
-				if (n.isTiedToNext && score) Note.getTiedNote(n, score, true).isTiedToPrev = false;
-				if (n.isTiedToPrev) n.isTiedToPrev = false;
+				if (n.isTiedToNext && score) {
+					const nextNote = Note.getTiedNote(n, score, true);
+					n.isTiedToNext = false;
+					nextNote.fullName = '';
+					nextNote.isTiedToPrev = false;
+				} else if (n.isTiedToPrev && score) {
+					Note.getTiedNote(n, score, false).isTiedToPrev = false;
+					n.isTiedToPrev = false;
+				}
 				n.fullName = '';
 				n.isRest = true;
 			});
@@ -295,7 +302,13 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 							>
 								<ArrowDropDownOutlinedIcon titleAccess="Semitone down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="semitone" className={`${classes.actionButton}`} disabled={!noteOptions.canSemiUp}>
+							<IconButton
+								onClick={handleChangePitch}
+								data-direction="up"
+								data-amount="semitone"
+								className={`${classes.actionButton}`}
+								disabled={!noteOptions.canSemiUp}
+							>
 								<ArrowDropUpOutlinedIcon titleAccess="Semitone up" />
 							</IconButton>
 							<Typography variant="body1" className={`${classes.panelText}`}>
@@ -312,7 +325,13 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 							>
 								<ArrowDropDownOutlinedIcon titleAccess="Octave down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="octave" className={`${classes.actionButton}`} disabled={!noteOptions.canOctaveUp}>
+							<IconButton
+								onClick={handleChangePitch}
+								data-direction="up"
+								data-amount="octave"
+								className={`${classes.actionButton}`}
+								disabled={!noteOptions.canOctaveUp}
+							>
 								<ArrowDropUpOutlinedIcon titleAccess="Octave up" />
 							</IconButton>
 							<Typography variant="body1" className={`${classes.panelText}`}>
