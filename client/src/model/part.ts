@@ -82,7 +82,6 @@ export class Part implements PartModel {
 			p.notes.splice(targetNoteIndex + 1, 0, newNote);
 			if (targetNote.durationDivs + targetNote.startDiv <= measure.durationDivs) {
 				targetNote.isTiedToNext = false;
-				//todo find the next note
 				Note.getTiedNote(targetNote, music, true).isTiedToPrev = false;
 			}
 		} else {
