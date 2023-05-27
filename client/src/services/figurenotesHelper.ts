@@ -220,7 +220,9 @@ export class FigurenotesHelper {
 		//  at least half a quarter (to the end of the first note), plus another quarter for each extra note it lasts
 		//  Or (if there's one quarter or less left to the end of the measure), simply half the note
 		widthValue = Math.max(quarterSize / 2 - 1 + ((note.durationDivs - 24) * quarterSize) / 24, quarterSize / 2);
-		if (note.isTiedToPrev && note.durationDivs > 24) widthValue += quarterSize / 2;
+		//! old version: if (note.isTiedToPrev && note.durationDivs > 24) widthValue += quarterSize / 2;
+		//todo see why i had the second condition (maybe because of the default prevNote tail?)
+		if (note.isTiedToPrev) widthValue += quarterSize / 2;
 
 		// left
 		// if tied to previous left is 0, else start at the half of the original note block

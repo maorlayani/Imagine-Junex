@@ -126,10 +126,4 @@ export class Measure implements MeasureModel {
 			Part.resetIds(p, m.id);
 		});
 	}
-
-	// static setTiedTail(measure: MeasureModel, durationDivs: number, partInfoId: string, music: MusicModel){
-	// 	// measure.parts[0].partInfoId = partInfoId;
-	// 	console.log('tying a tail');
-	// 	// Part.changeNoteDuration(measure.parts[0], measure.parts[0].notes[0].id, durationDivs, measure, music, false);
-	// }
 }

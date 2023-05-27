@@ -7,7 +7,7 @@ import { Measure } from './measure';
 export class Music implements MusicModel {
 	kind: EntityKind = EntityKind.MUSIC;
 
-	constructor(public partsInfo: PartInfo[], public measures: Measure[]) { }
+	constructor(public partsInfo: PartInfo[], public measures: Measure[]) {}
 
 	static createNew(timeSignature: string, tempoBpm: number, hasPickupMeasure: boolean, numberOfMeasures: number, scaleRoot: string, scaleMode: string) {
 		const partsInfo: PartInfo[] = [PartInfo.createNew(PartType.FN_LVL_1, 'Melody', true)];
@@ -51,9 +51,9 @@ export class Music implements MusicModel {
 		return u.measures.find((m) => m.id === measureId) || null;
 	}
 	static findMeasureIdx(u: MusicModel, measureId: string): number {
-		let result: number
-		result = u.measures.findIndex(m => m.id === measureId)
-		return result
+		let result: number;
+		result = u.measures.findIndex((m) => m.id === measureId);
+		return result;
 	}
 	static isLastMeasure(u: MusicModel, measureId: string): boolean {
 		return u.measures[u.measures.length - 1].id === measureId;
@@ -69,9 +69,9 @@ export class Music implements MusicModel {
 		return result;
 	}
 	static findPartIdx(measure: MeasureModel, partId: string): number {
-		let result: number
-		result = measure.parts.findIndex(p => p.id === partId)
-		return result
+		let result: number;
+		result = measure.parts.findIndex((p) => p.id === partId);
+		return result;
 	}
 	static findNote(u: MusicModel, noteId: string): NoteModel | null {
 		let result: NoteModel | null = null;
@@ -83,9 +83,9 @@ export class Music implements MusicModel {
 		return result;
 	}
 	static findNoteIndex(part: PartModel, noteId: string): number {
-		let result: number
-		result = part.notes.findIndex(n => n.id === noteId)
-		return result
+		let result: number;
+		result = part.notes.findIndex((n) => n.id === noteId);
+		return result;
 	}
 	static doesPartHasSharpsOrFlats(u: MusicModel, partInfoId: string) {
 		let found = false;

@@ -148,14 +148,39 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 
 	const handleClickDelete = useCallback(
 		function handleClickDelete() {
+			if (!score) return;
 			const notes: NoteModel[] = getSelectedNotes(false);
 			if (!notes.length) {
 				return;
 			}
 			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'delete note');
 			notes.forEach((n) => {
-				if (n.isTiedToNext && score) Note.getTiedNote(n, score, true).isTiedToPrev = false;
-				if (n.isTiedToPrev) n.isTiedToPrev = false;
+				const m = Music.findMeasure(score.music, n.measureId);
+				if (!m) {
+					return;
+				}
+				const p = Measure.findPart(m, n.partId);
+				if (!p) {
+					return;
+				}
+				if (n.isTiedToNext) {
+					const nextNote = Note.getTiedNote(n, score.music, true);
+					n.isTiedToNext = false;
+					nextNote.fullName = '';
+					nextNote.isTiedToPrev = false;
+					const nextMeasure = Music.findMeasure(score.music, nextNote.measureId);
+					const nextPart = Measure.findPart(nextMeasure!, nextNote.partId);
+					const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(nextMeasure!.timeSignature).beatDurationDivs, nextNote.durationDivs);
+					// revert duration to the default
+					Part.changeNoteDuration(nextPart!, nextNote.id, defaultDuration, nextMeasure!, score.music, false);
+				} else if (n.isTiedToPrev) {
+					Note.getTiedNote(n, score.music, false).isTiedToNext = false;
+					// Note.getTiedNote(n, score, false).isTiedToPrev = false;
+					n.isTiedToPrev = false;
+				}
+				// set the note duration to either the default, or it's current length (in the edge case of last note in part that is shorter than normal)
+				const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(m.timeSignature).beatDurationDivs, n.durationDivs);
+				Part.changeNoteDuration(p, n.id, defaultDuration, m, score.music, false);
 				n.fullName = '';
 				n.isRest = true;
 			});
@@ -295,7 +320,13 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 							>
 								<ArrowDropDownOutlinedIcon titleAccess="Semitone down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="semitone" className={`${classes.actionButton}`} disabled={!noteOptions.canSemiUp}>
+							<IconButton
+								onClick={handleChangePitch}
+								data-direction="up"
+								data-amount="semitone"
+								className={`${classes.actionButton}`}
+								disabled={!noteOptions.canSemiUp}
+							>
 								<ArrowDropUpOutlinedIcon titleAccess="Semitone up" />
 							</IconButton>
 							<Typography variant="body1" className={`${classes.panelText}`}>
@@ -312,7 +343,13 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 							>
 								<ArrowDropDownOutlinedIcon titleAccess="Octave down" />
 							</IconButton>
-							<IconButton onClick={handleChangePitch} data-direction="up" data-amount="octave" className={`${classes.actionButton}`} disabled={!noteOptions.canOctaveUp}>
+							<IconButton
+								onClick={handleChangePitch}
+								data-direction="up"
+								data-amount="octave"
+								className={`${classes.actionButton}`}
+								disabled={!noteOptions.canOctaveUp}
+							>
 								<ArrowDropUpOutlinedIcon titleAccess="Octave up" />
 							</IconButton>
 							<Typography variant="body1" className={`${classes.panelText}`}>
