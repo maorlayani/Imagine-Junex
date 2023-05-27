@@ -80,6 +80,11 @@ export class Part implements PartModel {
 			const curStartDivs = targetNote.startDiv + targetNote.durationDivs;
 			const newNote = new Note(CommonHelper.getRandomId(), targetNote.measureId, targetNote.partId, '', true, curStartDivs, -deltaDivs, false, false, false);
 			p.notes.splice(targetNoteIndex + 1, 0, newNote);
+			if (targetNote.durationDivs + targetNote.startDiv <= measure.durationDivs) {
+				targetNote.isTiedToNext = false;
+				//todo find the next note
+				Note.getTiedNote(targetNote, music, true).isTiedToPrev = false;
+			}
 		} else {
 			targetNote.durationDivs = newDurationDivs;
 			// if the selected note is not the last note
@@ -112,7 +117,7 @@ export class Part implements PartModel {
 					n.durationDivs = Math.max(n.durationDivs - (endDiv - measure.durationDivs), 0);
 					if (n.durationDivs > 0) {
 						lastOkIndex = i;
-						//! need to test this if duration changing still works. done 27/05/2023
+						//! need to test this if duration changing still works. done 27/05/2023 erez
 						// if (n.id === selection?.noteId) {
 						if (n.id === noteId) {
 							tiedDivs = n.startDiv + newDurationDivs - measure.durationDivs;

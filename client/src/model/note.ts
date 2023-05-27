@@ -40,8 +40,8 @@ export class Note implements NoteModel {
 		n.partId = partId;
 	}
 
-	static getTiedNote(note: NoteModel, score: ScoreModel, isNext: boolean): NoteModel {
-		const { measures } = score.music;
+	static getTiedNote(note: NoteModel, music: MusicModel, isNext: boolean): NoteModel {
+		const { measures } = music;
 		const measureIdx = measures.findIndex((m) => m.id === note.measureId);
 		const partIdx = measures[measureIdx].parts.findIndex((p) => p.id === note.partId);
 		if (!isNext) {

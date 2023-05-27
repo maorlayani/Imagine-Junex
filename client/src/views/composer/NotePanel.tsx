@@ -163,23 +163,23 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 				if (!p) {
 					return;
 				}
-				// set the note duration to either the default, or it's current length (in the edge case of last note in part that is shorter than normal)
-				const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(m.timeSignature).beatDurationDivs, n.durationDivs);
 				if (n.isTiedToNext) {
-					const nextNote = Note.getTiedNote(n, score, true);
+					const nextNote = Note.getTiedNote(n, score.music, true);
 					n.isTiedToNext = false;
 					nextNote.fullName = '';
 					nextNote.isTiedToPrev = false;
 					const nextMeasure = Music.findMeasure(score.music, nextNote.measureId);
 					const nextPart = Measure.findPart(nextMeasure!, nextNote.partId);
 					const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(nextMeasure!.timeSignature).beatDurationDivs, nextNote.durationDivs);
+					// revert duration to the default
 					Part.changeNoteDuration(nextPart!, nextNote.id, defaultDuration, nextMeasure!, score.music, false);
 				} else if (n.isTiedToPrev) {
-					// debugger
-					Note.getTiedNote(n, score, false).isTiedToNext = false;
+					Note.getTiedNote(n, score.music, false).isTiedToNext = false;
 					// Note.getTiedNote(n, score, false).isTiedToPrev = false;
 					n.isTiedToPrev = false;
 				}
+				// set the note duration to either the default, or it's current length (in the edge case of last note in part that is shorter than normal)
+				const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(m.timeSignature).beatDurationDivs, n.durationDivs);
 				Part.changeNoteDuration(p, n.id, defaultDuration, m, score.music, false);
 				n.fullName = '';
 				n.isRest = true;

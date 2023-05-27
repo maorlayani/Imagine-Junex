@@ -213,11 +213,11 @@ export const ComposerPage = () => {
 					}
 				}
 				// if note is tied  in front: change the tied note too
-				if (note.isTiedToNext) Note.getTiedNote(note, score, true).fullName = noteFullName;
+				if (note.isTiedToNext) Note.getTiedNote(note, score.music, true).fullName = noteFullName;
 				// if note is tied from behind: sever the tie between them
 				if (note.isTiedToPrev) {
 					note.isTiedToPrev = false;
-					Note.getTiedNote(note, score, false).isTiedToNext = false;
+					Note.getTiedNote(note, score.music, false).isTiedToNext = false;
 				}
 			}
 			handleScoreUpdated();
