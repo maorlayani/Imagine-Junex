@@ -153,7 +153,6 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 			if (!notes.length) {
 				return;
 			}
-			debugger
 			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'delete note');
 			notes.forEach((n) => {
 				const m = Music.findMeasure(score.music, n.measureId);
@@ -176,7 +175,9 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 					const defaultDuration = Math.min(MusicalHelper.parseTimeSignature(nextMeasure!.timeSignature).beatDurationDivs, nextNote.durationDivs);
 					Part.changeNoteDuration(nextPart!, nextNote.id, defaultDuration, nextMeasure!, score.music, false);
 				} else if (n.isTiedToPrev) {
-					Note.getTiedNote(n, score, false).isTiedToPrev = false;
+					// debugger
+					Note.getTiedNote(n, score, false).isTiedToNext = false;
+					// Note.getTiedNote(n, score, false).isTiedToPrev = false;
 					n.isTiedToPrev = false;
 				}
 				Part.changeNoteDuration(p, n.id, defaultDuration, m, score.music, false);
