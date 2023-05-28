@@ -538,13 +538,13 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 																/>
 															)}
 															{/* the arrow for flat / sharp */}
-															{n.fullName.length >= 2 && n.fullName[1] === '#' && (
+															{!n.isTiedToPrev && n.fullName.length >= 2 && n.fullName[1] === '#' && (
 																<ArrowRightAltIcon
 																	className={`${classes.alter} sharp`}
 																	style={{ left: `${scoreSettings.quarterSize / 2 - 8}px` }}
 																/>
 															)}
-															{n.fullName.length >= 2 && n.fullName[1] === 'b' && (
+															{!n.isTiedToPrev && n.fullName.length >= 2 && n.fullName[1] === 'b' && (
 																<ArrowRightAltIcon
 																	className={`${classes.alter} flat`}
 																	style={{ left: `${scoreSettings.quarterSize / 2 - 18}px` }}
