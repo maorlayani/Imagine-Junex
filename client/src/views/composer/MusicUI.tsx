@@ -73,7 +73,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			display: 'flex',
 		},
 		partSpaceAbove: {
-			marginTop: 10,
+			marginTop: 20,
 		},
 		note: {
 			position: 'relative',
@@ -306,7 +306,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			}
 			// step in last part line
 			else if (partIdx === currentMeasure.parts.length - 1) {
-				// step between measures in the DIFFERENT lines 
+				// step between measures in the DIFFERENT lines
 				if ((measureIdx + 1) % sizeVars.numberOfMeasuresPerRow === 0) {
 					const newPart = nextMeasure.parts[0]
 					newNote = newPart.notes[0]
@@ -350,7 +350,7 @@ export const MusicUI = ({ music, scoreSettings }: MusicUIProps) => {
 			}
 			// step in last part line
 			else if (partIdx === currentMeasure.parts.length - 1) {
-				// step between measures in the DIFFERENT lines 
+				// step between measures in the DIFFERENT lines
 				if ((measureIdx + 1) % sizeVars.numberOfMeasuresPerRow !== 0) {
 					const newPart = nextMeasure.parts[partIdx - 1]
 					newNote = newPart.notes[newPart.notes.length - 1]
