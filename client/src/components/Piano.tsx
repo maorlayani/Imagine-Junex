@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box';
@@ -203,6 +203,14 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 	const draggablePanelContentRef = useRef(null);
 
 	const [isExpanded, setIsExpanded] = useState(true);
+	useEffect(() => {
+		document.addEventListener("keydown", handleKeyboardDownEvent)
+		return () => document.removeEventListener("keydown", handleKeyboardDownEvent)
+	}, [])
+	useEffect(() => {
+		document.addEventListener("keyup", handleKeyboardUpEvent)
+		return () => document.removeEventListener("keyup", handleKeyboardUpEvent)
+	}, [])
 	const handleClickExpand = useCallback(function handleClickExpand() {
 		setIsExpanded(true);
 	}, []);
@@ -250,6 +258,10 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 	const startNote = useCallback(
 		function startNote(noteName: string, octaveNumber: number) {
 			const noteFullName = noteName + octaveNumber;
+
+			console.log('noteName', noteName);
+			console.log('octaveNumber', octaveNumber);
+
 			SoundHelper.startNote(noteFullName);
 			if (onPianoNote) {
 				onPianoNote(noteFullName);
@@ -264,6 +276,7 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 
 	const handleMouseDown = useCallback(
 		function handleMouseDown(e) {
+			console.log('down');
 			startNote(e.currentTarget.dataset['noteName'], e.currentTarget.dataset['octaveNumber']);
 		},
 		[startNote],
@@ -292,7 +305,60 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 		},
 		[stopNote],
 	);
-
+	const handleKeyboardDownEvent = (e: KeyboardEvent) => {
+		switch (e.code) {
+			case 'KeyC':
+				startNote('C', 3)
+				break;
+			case 'KeyD':
+				startNote('D', 3)
+				break;
+			case 'KeyE':
+				startNote('E', 3)
+				break;
+			case 'KeyF':
+				startNote('F', 3)
+				break;
+			case 'KeyG':
+				startNote('G', 3)
+				break;
+			case 'KeyA':
+				startNote('A', 3)
+				break;
+			case 'KeyB':
+				startNote('B', 3)
+				break;
+			default:
+				break;
+		}
+	}
+	const handleKeyboardUpEvent = (e: KeyboardEvent) => {
+		switch (e.code) {
+			case 'KeyC':
+				stopNote('C', 3)
+				break;
+			case 'KeyD':
+				stopNote('D', 3)
+				break;
+			case 'KeyE':
+				stopNote('E', 3)
+				break;
+			case 'KeyF':
+				stopNote('F', 3)
+				break;
+			case 'KeyG':
+				stopNote('G', 3)
+				break;
+			case 'KeyA':
+				stopNote('A', 3)
+				break;
+			case 'KeyB':
+				stopNote('B', 3)
+				break;
+			default:
+				break;
+		}
+	}
 	return (
 		<div id="Piano" ref={draggablePanelContentRef} className={`${classes.root} ${isExpanded ? '' : classes.rootCollapsed} ${smallPiano ? 'small-piano' : ''}`}>
 			{smallPiano && smallPiano && <DraggablePanel contentRef={draggablePanelContentRef} title="Piano" draggedItemType={DraggedItemType.PIANO_PANEL} />}
@@ -317,9 +383,8 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 								key={octIndex}
 								onClick={toggleOctave}
 								data-octave-index={octIndex}
-								className={`${classes.octaveSwitchLed} led ${powerOn && oct ? 'led--on' : ''} ${powerOn && !oct ? 'led--off' : ''} ${
-									powerOn ? '' : 'pointer-events-none'
-								}`}
+								className={`${classes.octaveSwitchLed} led ${powerOn && oct ? 'led--on' : ''} ${powerOn && !oct ? 'led--off' : ''} ${powerOn ? '' : 'pointer-events-none'
+									}`}
 							/>
 						))}
 						<Typography className={classes.octaveSwitchesText}>Octaves</Typography>
