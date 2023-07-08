@@ -206,11 +206,11 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 	useEffect(() => {
 		document.addEventListener("keydown", handleKeyboardDownEvent)
 		return () => document.removeEventListener("keydown", handleKeyboardDownEvent)
-	}, [])
+	})
 	useEffect(() => {
 		document.addEventListener("keyup", handleKeyboardUpEvent)
 		return () => document.removeEventListener("keyup", handleKeyboardUpEvent)
-	}, [])
+	})
 	const handleClickExpand = useCallback(function handleClickExpand() {
 		setIsExpanded(true);
 	}, []);
@@ -258,10 +258,6 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 	const startNote = useCallback(
 		function startNote(noteName: string, octaveNumber: number) {
 			const noteFullName = noteName + octaveNumber;
-
-			console.log('noteName', noteName);
-			console.log('octaveNumber', octaveNumber);
-
 			SoundHelper.startNote(noteFullName);
 			if (onPianoNote) {
 				onPianoNote(noteFullName);
@@ -276,7 +272,6 @@ export const Piano = React.memo(({ smallPiano, onPianoNote }: PianoProps) => {
 
 	const handleMouseDown = useCallback(
 		function handleMouseDown(e) {
-			console.log('down');
 			startNote(e.currentTarget.dataset['noteName'], e.currentTarget.dataset['octaveNumber']);
 		},
 		[startNote],

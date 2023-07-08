@@ -149,7 +149,4 @@ export class KeyboardHelper {
             }
         }
     }
-    static handleKeyA() {
-
-    }
 }
