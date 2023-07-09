@@ -188,7 +188,6 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 		},
 		[getSelectedNotes, onUpdateScore, score],
 	);
-
 	const handleChangePitch = useCallback(
 		function handleChangePitch(e) {
 			if (!score) {
