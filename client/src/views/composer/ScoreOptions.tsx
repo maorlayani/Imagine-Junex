@@ -48,6 +48,9 @@ function ScoreOptions({ onRedoUndo, onClickTune, pageWidth, stageWidth }: ScoreO
 			'&.hidden': {
 				opacity: 0,
 			},
+			'@media print': {
+				display: 'none',
+			},
 		},
 		history: {
 			color: '#ccc',

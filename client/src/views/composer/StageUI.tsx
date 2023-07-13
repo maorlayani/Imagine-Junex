@@ -47,36 +47,6 @@ export const StageUI = ({ score, onUpdateScore, onRedoUndo }: StageUIProps) => {
 			backgroundColor: '#fff',
 			color: '#000',
 		},
-		scoreOptions: {
-			position: 'absolute',
-			display: 'flex',
-			width: pageWidth - 16 - (pageWidth - stageWidth) / 2,
-			left: 16,
-			top: 16,
-		},
-		scoreOptionButton: {
-			width: '24px !important',
-			height: '32px !important',
-			textAlign: 'center',
-			cursor: 'pointer',
-			transition: 'all 0.2s ease-in-out',
-			color: '#333',
-			'&.disabled': {
-				pointerEvents: 'none',
-				color: '#444',
-			},
-			'@media print': {
-				display: 'none',
-			},
-		},
-		undoRedoPanel: {
-			display: 'flex',
-			alignItems: 'center',
-			backgroundColor: '#222',
-			padding: 4,
-			borderRadius: 4,
-			boxShadow: '3px 3px 2px rgba(0, 0, 0, 0.2)',
-		},
 		history: {
 			color: '#ccc',
 			backgroundColor: '#444',
@@ -147,20 +117,6 @@ export const StageUI = ({ score, onUpdateScore, onRedoUndo }: StageUIProps) => {
 				<Box id="StageUI" className={`${classes.root} no-scrollbar`} style={{ width: `${pageWidth}px`, padding: `${(pageWidth - stageWidth) / 2}px` }}>
 					<Box className={classes.content} style={{ width: `${stageWidth}px` }}>
 						<ScoreOptions onClickTune={handleClickTune} onRedoUndo={onRedoUndo} pageWidth={pageWidth} stageWidth={stageWidth} />
-						{/* <Box className={classes.scoreOptions}>
-							<IconButton onClick={handleClickTune} className={`${classes.scoreOptionButton} ${classes.tuneBtn}`} disabled={!score}>
-								<TuneIcon titleAccess="Tune Page" />
-							</IconButton>
-							<Box className={classes.undoRedoPanel}>
-								<IconButton onClick={() => onRedoUndo(-1)} className={`${classes.scoreOptionButton} ${classes.undoBtn}`} disabled={!score}>
-									<UndoIcon titleAccess="Undo" />
-								</IconButton>
-								<Typography className={`${classes.history}`}>2/5</Typography>
-								<IconButton onClick={() => onRedoUndo(1)} className={`${classes.scoreOptionButton} ${classes.redoBtn}`} disabled={!score}>
-									<RedoIcon titleAccess="Redo" />
-								</IconButton>
-							</Box>
-						</Box> */}
 						<Modal open={tuneStageDialogVisible} onClose={handleCloseTuneStageDialog}>
 							<TunePageDialog score={score} onUpdateScore={handleScoreUpdated} onDoneTuneStageDialog={handleDoneTuneStageDialog} />
 						</Modal>
