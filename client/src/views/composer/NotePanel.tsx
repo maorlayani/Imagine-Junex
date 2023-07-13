@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box';
@@ -122,6 +122,11 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 	const draggablePanelContentRef = useRef(null);
 
 	const [isExpanded, setIsExpanded] = useState(true);
+	useEffect(() => {
+		document.addEventListener("keydown", handleKeyboardEvent)
+		return () => document.removeEventListener("keydown", handleKeyboardEvent)
+	})
+
 	const handleClickExpand = useCallback(function handleClickExpand() {
 		setIsExpanded(true);
 	}, []);
@@ -190,6 +195,8 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 	);
 	const handleChangePitch = useCallback(
 		function handleChangePitch(e) {
+			console.log(e.currentTarget.dataset.direction);
+
 			if (!score) {
 				return;
 			}
@@ -220,32 +227,12 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 		[score, getSelectedNotes, onUpdateScore],
 	);
 
-	const handleClickNoteDuration = useCallback(
-		function handleClickNoteDuration(e) {
-			if (!score) {
-				return;
-			}
-			const notes: NoteModel[] = getSelectedNotes(true);
-			if (!notes.length) {
-				return;
-			}
-			AnalyticsHelper.sendEvent(EventCategory.NOTE, 'set note duration', e.currentTarget.dataset['durationDivs']);
-			notes.forEach((n) => {
-				const m = Music.findMeasure(score.music, n.measureId);
-				if (!m) {
-					return;
-				}
-				const p = Measure.findPart(m, n.partId);
-				if (!p) {
-					return;
-				}
-				const isLastMeasure = Music.isLastMeasure(score.music, n.measureId);
-				Part.changeNoteDuration(p, n.id, Number(e.currentTarget.dataset['durationDivs']), m, score.music, isLastMeasure, selection[0]);
-				onUpdateScore();
-			});
-		},
-		[score, getSelectedNotes, onUpdateScore, selection],
-	);
+	//const handleClickNoteDuration = useCallback(
+	//function handleClickNoteDuration(e, durationByKeyboard?: string): JSX.Element {
+
+	//	},
+	//[score, getSelectedNotes, onUpdateScore, selection],
+	//);
 
 	const noteOptions = useMemo(() => {
 		const durations = [
@@ -288,6 +275,75 @@ export const NotePanel = ({ score, onUpdateScore }: NotePanelProps) => {
 		return noteOptions;
 	}, [getSelectedNotes, score]);
 
+	const handleClickNoteDuration = (e: React.MouseEvent<HTMLElement> | null, durationByKeyboard?: string) => {
+		let duration = e ? e.currentTarget.dataset['durationDivs'] : durationByKeyboard
+		if (!score) {
+			return;
+		}
+		const notes: NoteModel[] = getSelectedNotes(true);
+		if (!notes.length) {
+			return;
+		}
+		AnalyticsHelper.sendEvent(EventCategory.NOTE, 'set note duration', duration);
+		notes.forEach((n) => {
+			const m = Music.findMeasure(score.music, n.measureId);
+			if (!m) {
+				return;
+			}
+			const p = Measure.findPart(m, n.partId);
+			if (!p) {
+				return;
+			}
+			const isLastMeasure = Music.isLastMeasure(score.music, n.measureId);
+			Part.changeNoteDuration(p, n.id, Number(duration), m, score.music, isLastMeasure, selection[0]);
+			onUpdateScore();
+		});
+	}
+	const handleKeyboardNoteDuration = (isAdding: boolean) => {
+		if (!score) return
+		const m = Music.findMeasure(score.music, selection[0].measureId);
+		if (!m) return
+		const p = Measure.findPart(m, selection[0].partId);
+		if (!p) return
+		const n = Part.findNote(p, selection[0].noteId)
+		if (!n) return
+		if (isAdding) {
+			if (n.durationDivs === 96) return
+			if (n.durationDivs >= 24) handleClickNoteDuration(null, (n.durationDivs + 12).toString())
+			else handleClickNoteDuration(null, (n.durationDivs + 6).toString())
+		} else {
+			if (n.durationDivs === 6) return
+			if (n.durationDivs >= 24) handleClickNoteDuration(null, (n.durationDivs - 12).toString())
+			else handleClickNoteDuration(null, (n.durationDivs - 6).toString())
+		}
+	}
+	const handleKeyboardEvent = (e: KeyboardEvent) => {
+		switch (e.code) {
+			case 'Digit1':
+				handleClickNoteDuration(null, '96')
+				break;
+			case 'Digit2':
+				handleClickNoteDuration(null, '48')
+				break;
+			case 'Digit3':
+				handleClickNoteDuration(null, '24')
+				break;
+			case 'Digit4':
+				handleClickNoteDuration(null, '12')
+				break;
+			case 'Digit5':
+				handleClickNoteDuration(null, '6')
+				break;
+			case 'Minus':
+				handleKeyboardNoteDuration(false)
+				break;
+			case 'Equal':
+				handleKeyboardNoteDuration(true)
+				break;
+			default:
+				break;
+		}
+	}
 	return (
 		<div id="NotePanel" ref={draggablePanelContentRef} className={`${classes.root} ${isExpanded ? '' : classes.rootCollapsed}`}>
 			<DraggablePanel contentRef={draggablePanelContentRef} title="Note" draggedItemType={DraggedItemType.NOTE_PANEL} />
